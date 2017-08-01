@@ -1,0 +1,29 @@
+baseurl = "https://malramsay.com"
+languageCode = "en"
+title = "Malcolm Ramsay"
+theme = "beautifulhugo"
+copyright = "&copy; Malcolm Ramsay 2017"
+googleAnalytics = "UA-66067760-1"
+pygmentsuseclasses = true
+pygmentCodeFences = true
+
+[Author]
+name = "Malcolm Ramsay"
+email = "malcolm@malramsay.com"
+github = "malramsay.com"
+
+
+[[menu.main]]
+name = "Blog"
+url = ""
+weight = 1
+
+[taxonomies]
+tag = "tags"
+category = "categories"
+
+[params]
+
+[params.highlight]
+style = "github"
+languages = ["python", "bash", "go", "dockerfile"]
