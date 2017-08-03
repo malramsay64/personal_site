@@ -31,6 +31,15 @@ I wanted a command line utility that;
 
 ## The Solution
 
+It turns out that this is a fairly simple solution in python,
+you just have to know the appropriate tools to use.
+
+The first requirement has a simple solution,
+write the script and place it somewhere in `$PATH`.
+However, that solution also has a number of drawbacks.
+
+
+The hardest part of solving this problem is finding the appropriate tools for the job.
 
 
     @click.argument('filename', type=click.Path(exists=True))
