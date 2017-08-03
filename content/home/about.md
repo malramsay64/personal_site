@@ -1,7 +1,7 @@
 +++
 # About/Biography widget.
 
-date = "2017-08-01 17:30"
+date = "2017-08-01"
 draft = false
 
 widget = "about"
