@@ -1,4 +1,4 @@
-baseurl = "https://www.malramsay.com/"  # End your URL with a `/` trailing slash.
+baseurl = "https://malramsay.com/"  # End your URL with a `/` trailing slash.
 title = "Malcolm Ramsay"
 copyright = "&copy; 2017 Malcolm Ramsay"
 theme = "academic"
@@ -22,7 +22,7 @@ defaultContentLanguageInSubdir = false
   name = "Malcolm Ramsay"
   role = "PhD Candidate"
   organization = "University of Sydney"
-  organization_url = "sydney.edu.au"
+  organization_url = "https://sydney.edu.au"
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
   avatar = ""  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
   email = "malramsay64@gmail.com"

@@ -18,4 +18,4 @@ echo "Generating site"
 hugo
 
 echo "Synchronising Cloud"
-gsutil -m rsync -d -r public gs://www.malramsay.com/
+gsutil -m rsync -d -r public gs://malramsay.com/
