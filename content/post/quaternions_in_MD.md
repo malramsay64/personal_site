@@ -10,7 +10,7 @@ In the understanding of the dynamics of a molecule in a Molecular Dynamics (MD) 
 the two main properties we use to understand liquid behaviour are 
 the translational motion and the rotational motion of the atoms or molecules.
 These motions reflect changes in the position and the orientation of the molecules.
-When calculating these quantities from a molecular dynamics (MD) simulation
+When calculating these motions in an MD simulation
 it makes sense to represent each molecule as;
 
 - the position of the Center of Mass (COM), and
