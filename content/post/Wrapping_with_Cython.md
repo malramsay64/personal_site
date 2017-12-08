@@ -1,7 +1,7 @@
 +++
 title = "Wrapping with Cython"
 date = "2017-12-17"
-draft = True
+draft = true
 
 highlight = true
 +++
@@ -37,4 +37,5 @@ a perfectly valid approach
 [voronoi wikipedia]:
 [qhull]:
 [voro]:
-[pyvoro]:
+[pyvoro]: https://github.com/joe-jordan/pyvoro
+[tess]: https://github.com/wackywendell/tess

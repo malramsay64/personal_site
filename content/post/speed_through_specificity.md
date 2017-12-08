@@ -1,7 +1,7 @@
 +++
 title = "Speed Through Specificity"
 date = "2017-12-10"
-draft = True
+draft = true
 
 highlight = true
 +++
