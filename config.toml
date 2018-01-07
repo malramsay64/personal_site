@@ -77,7 +77,7 @@ defaultContentLanguageInSubdir = false
   #   For more info on the highlighting options, see:
   #   https://gcushen.github.io/hugo-academic-demo/post/writing-markdown-latex/#highlighting-options
   highlight = true
-  highlight_languages = ["python", "bash"]
+  highlight_languages = ["python", "bash", "yaml"]
   highlight_style = "github"
   # highlight_version = "9.9.0"
 
@@ -142,6 +142,11 @@ defaultContentLanguageInSubdir = false
     icon = "github"
     icon_pack = "fa"
     link = "//github.com/malramsay64"
+
+  [[params.social]]
+    icon = "linkedin"
+    icon_pack = "fa"
+    link = "//www.linkedin.com/in/malramsay64/"
 
 
 # Navigation Links
