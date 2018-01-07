@@ -1,8 +1,8 @@
 +++
 title = "The Perils of Packaging in Python"
-date = "2017-12-14"
+date = "2018-01-07"
 
-draft = true
+draft = false
 math = false
 highlight = true
 +++
