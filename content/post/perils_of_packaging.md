@@ -1,6 +1,6 @@
 +++
 title = "The Perils of Packaging in Python"
-date = "2018-01-07"
+date = "2018-01-14"
 
 draft = false
 math = false
@@ -29,6 +29,182 @@ Rather than document what I have found to be the 'perfect' method,
 something which I still don't have,
 this is a collection of my failures
 that will hopefully prevent someone else making the same mistakes.
+
+## Packaging and Deploying
+
+### Versioning
+
+In deploying an application a version scheme provides
+an indication of the changes made,
+especially where a semantic versioning scheme is used.
+To make the versioning process simpler,
+I have been using git tags as the 'true' version number.
+To get the version number in the setup
+I have been using the `setuptools_scm` package.
+The versioning scheme that best fit how I have been thinking about
+release versions is the [post-release][post-release] scheme,
+using
+```
+use_scm_version={'version_scheme': 'post-release'}
+```
+The default state of setuptools_scm is to
+only include the dirty flag when files committed in the project have changed,
+rather than any untracked file in the directory.
+This change to a post release scheme also changed this default,
+meaning that when compiling on Travis every commit was dirty.
+This was fixed by also specifying the local version scheme
+```
+use_scm_version={'version_scheme': 'post-release',
+                 'local_scheme': 'dirty-tag'},
+```
+
+While having a hash after the version number is not a problem for me,
+it is a large problem when trying to upload packages to PyPI,
+which rejects it with the error
+```
+HTTPError: 400 Client Error: version: Cannot use PEP 440 local versions. for url: https://upload.pypi.org/legacy/
+```
+
+### Travis
+
+While Travis appears to have good support for uploading to PyPI,
+having a [deployment target][pypi deploy travis],
+as far as I can tell it [doesn't support non alphanumeric
+passwords](https://github.com/travis-ci/dpl/issues/377).
+Unfortunately I was unable to get some alternative methods of including a password to work.
+Authentication information for uploading to PyPI can be in the `~/.pypirc` file,
+however when trying to write this file using variable expansion
+```bash
+echo -e "[pypi]\nusername=$PYPI_USERNAME\npassword=$PYPI_PASSWORD" > ~/.pypirc
+```
+resulted in the file
+```
+[pypi]
+username=$PYPI_USERNAME
+password=$PYPI_PASSWORD
+```
+with neither of the variables being expanded.
+I quickly gave up on that approach
+since it worked in every shell I tested it on locally.
+
+A solution that works is to use [twine][twine]
+which along with generally being more secure
+is able to read the environment variables
+`TWINE_USERNAME` and `TWINE_PASSWORD` to authenticate.
+
+### Installing from Pip
+
+Once a package is uploaded to PyPI it needs to be installable,
+i.e. running
+```
+$ pip install <package>
+```
+actually works,
+even in a clean environment.
+A sample `setup.py` file for a python package typically looks something like the one below
+([1](https://stackoverflow.com/questions/32528560/using-setuptools-to-create-a-cython-package-calling-an-external-c-library),
+[2](https://stackoverflow.com/questions/35497572/using-python-setuptools-to-put-cython-compiled-pyd-files-in-their-original-folde),
+[3](http://cython.readthedocs.io/en/latest/src/quickstart/build.html)).
+```
+# setup.py
+from setuptools import setup, Extension
+from Cython.Build import cythonize
+import numpy
+
+my_extensions = [Extension(..., include_dirs=numpy.get_include())]
+
+setup(
+    name=...,
+    ...,
+    setup_requires=['Cython', 'numpy'],
+    install_requires=['numpy']
+    ...,
+    ext_modules=cythonize(my_extensions),
+)
+```
+Problem is, when installing into a new environment via pip
+the install fails as reading the `setup.py` file requires
+both Cython and numpy to be installed as they are imported at the top of the file.
+Fortunately there is a fairly elegant solution,
+changing `my_extensions` to a function and importing the dependencies in the function.
+```
+# setup.py
+from setuptools import setup, Extension
+
+def my_extensions():
+    from Cython.Build import cythonize
+    import numpy
+    return cythonize[Extension(..., include_dirs=numpy.get_include())]
+
+setup(
+    name=...,
+    ...,
+    setup_requires=['Cython', 'numpy'],
+    install_requires=['numpy']
+    ...,
+    ext_modules=my_extensions(),
+)
+```
+
+## Wheels
+
+I have included wheels as their own section
+since I feel they are especially egregious.
+The PyPI [documentation][pypi docs wheels] tells you that
+"You should also create a wheel for your project."
+Well sure, I will just follow the instructions in the docs
+```bash
+$ python setup.py bdist_wheel
+$ twine upload dist/sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
+Uploading distributions to https://upload.pypi.org/legacy/
+Enter your username: malramsay64
+Enter your password:
+Uploading sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
+HTTPError: 400 Client Error: Binary wheel 'sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl' has an unsupported platform tag 'linux_x86_64'. for url: https://upload.pypi.org/legacy/
+
+```
+Huh??? 
+I also think it is great that I have to wait for the package to upload to get the error message.
+
+Some googling later...
+
+I need to use [auditwheel][auditwheel] to create a `manylinux1` wheel.
+After installing via pip (conda-forge only has auditwheel versions for up to python 3.5)
+```bash
+$ auditwheel repair dist/sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
+Repairing sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
+usage: auditwheel [-h] [-V] [-v] command ...
+auditwheel: error: cannot repair "dist/sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl" to
+"manylinux1_x86_64" ABI because of the presence of too-recent versioned symbols. You'll need to
+compile the wheel on an older toolchain.
+
+```
+
+Some more googling and reading documentation ...
+
+From the auditwheel README:
+
+>But in general, building manylinux1 wheels requires running on a CentOS5 machine, so we recommend using the pre-built manylinux Docker image.
+```
+$ docker run -i -t -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /bin/bash
+```
+
+Oh easy, now I have to set this up to build in a docker container...
+
+For a great example of building a manylinux1 wheel,
+I can suggest checking out the [pypa/python-manylinux-demo][manylinux demo] repository.
+Unfortunately it is not linked from the python packaging documentation
+and so is not that simple to find.
+
+
+Packaging in python is hard.
+I have over 70 builds this week on travis
+just trying to get everything to actually work.
+At the end of all this I still don't really know what I am doing
+other than basically everything I try doesn't work
+and that I shouldn't try any of the above,
+since I already know it won't work.
+
 
 ## Building and Testing
 
@@ -214,181 +390,6 @@ with the correct hashes,
 which is fine while dependencies are not updated 
 and the Pipfile.lock file remains unchanged.
 
-## Packaging and Deploying
-
-### Versioning
-
-In deploying an application a version scheme provides
-an indication of the changes made,
-especially where a semantic versioning scheme is used.
-To make the versioning process simpler,
-I have been using git tags as the 'true' version number.
-To get the version number in the setup
-I have been using the `setuptools_scm` package.
-The versioning scheme that best fit how I have been thinking about
-release versions is the [post-release][post-release] scheme,
-using
-```
-use_scm_version={'version_scheme': 'post-release'}
-```
-The default state of setuptools_scm is to
-only include the dirty flag when files committed in the project have changed,
-rather than any untracked file in the directory.
-This change to a post release scheme also changed this default,
-meaning that when compiling on Travis every commit was dirty.
-This was fixed by also specifying the local version scheme
-```
-use_scm_version={'version_scheme': 'post-release',
-                 'local_scheme': 'dirty-tag'},
-```
-
-While having a hash after the version number is not a problem for me,
-it is a large problem when trying to upload packages to PyPI,
-which rejects it with the error
-```
-HTTPError: 400 Client Error: version: Cannot use PEP 440 local versions. for url: https://upload.pypi.org/legacy/
-```
-
-### Travis
-
-While Travis appears to have good support for uploading to PyPI,
-having a [deployment target][pypi deploy travis],
-as far as I can tell it [doesn't support non alphanumeric
-passwords](https://github.com/travis-ci/dpl/issues/377).
-Unfortunately I was unable to get some alternative methods of including a password to work.
-Authentication information for uploading to PyPI can be in the `~/.pypirc` file,
-however when trying to write this file using variable expansion
-```bash
-echo -e "[pypi]\nusername=$PYPI_USERNAME\npassword=$PYPI_PASSWORD" > ~/.pypirc
-```
-resulted in the file
-```
-[pypi]
-username=$PYPI_USERNAME
-password=$PYPI_PASSWORD
-```
-with neither of the variables being expanded.
-I quickly gave up on that approach
-since it worked in every shell I tested it on locally.
-
-A solution that works is to use [twine][twine]
-which along with generally being more secure
-is able to read the environment variables
-`TWINE_USERNAME` and `TWINE_PASSWORD` to authenticate.
-
-### Installing from Pip
-
-Once a package is uploaded to PyPI it needs to be installable,
-i.e. running
-```
-$ pip install <package>
-```
-actually works,
-even in a clean environment.
-A sample `setup.py` file for a python package typically looks something like the one below
-([1](https://stackoverflow.com/questions/32528560/using-setuptools-to-create-a-cython-package-calling-an-external-c-library),
-[2](https://stackoverflow.com/questions/35497572/using-python-setuptools-to-put-cython-compiled-pyd-files-in-their-original-folde),
-[3](http://cython.readthedocs.io/en/latest/src/quickstart/build.html)).
-```
-# setup.py
-from setuptools import setup, Extension
-from Cython.Build import cythonize
-import numpy
-
-my_extensions = [Extension(..., include_dirs=numpy.get_include())]
-
-setup(
-    name=...,
-    ...,
-    setup_requires=['Cython', 'numpy'],
-    install_requires=['numpy']
-    ...,
-    ext_modules=cythonize(my_extensions),
-)
-```
-Problem is, when installing into a new environment via pip
-the install fails as reading the `setup.py` file requires
-both Cython and numpy to be installed as they are imported at the top of the file.
-Fortunately there is a fairly elegant solution,
-changing `my_extensions` to a function and importing the dependencies in the function.
-```
-# setup.py
-from setuptools import setup, Extension
-
-def my_extensions():
-    from Cython.Build import cythonize
-    import numpy
-    return cythonize[Extension(..., include_dirs=numpy.get_include())]
-
-setup(
-    name=...,
-    ...,
-    setup_requires=['Cython', 'numpy'],
-    install_requires=['numpy']
-    ...,
-    ext_modules=my_extensions(),
-)
-```
-
-## Wheels
-
-I have included wheels as their own section
-since I feel they are especially egregious.
-The PyPI [documentation][pypi docs wheels] tells you that
-"You should also create a wheel for your project."
-Well sure, I will just follow the instructions in the docs
-```bash
-$ python setup.py bdist_wheel
-$ twine upload dist/sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
-Uploading distributions to https://upload.pypi.org/legacy/
-Enter your username: malramsay64
-Enter your password:
-Uploading sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
-HTTPError: 400 Client Error: Binary wheel 'sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl' has an unsupported platform tag 'linux_x86_64'. for url: https://upload.pypi.org/legacy/
-
-```
-Huh??? 
-I also think it is great that I have to wait for the package to upload to get the error message.
-
-Some googling later...
-
-I need to use [auditwheel][auditwheel] to create a `manylinux1` wheel.
-After installing via pip (conda-forge only has auditwheel versions for up to python 3.5)
-```bash
-$ auditwheel repair dist/sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
-Repairing sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl
-usage: auditwheel [-h] [-V] [-v] command ...
-auditwheel: error: cannot repair "dist/sdanalysis-0.4.4.post5-cp36-cp36m-linux_x86_64.whl" to
-"manylinux1_x86_64" ABI because of the presence of too-recent versioned symbols. You'll need to
-compile the wheel on an older toolchain.
-
-```
-
-Some more googling and reading documentation ...
-
-From the auditwheel README:
-
->But in general, building manylinux1 wheels requires running on a CentOS5 machine, so we recommend using the pre-built manylinux Docker image.
-```
-$ docker run -i -t -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /bin/bash
-```
-
-Oh easy, now I have to set this up to build in a docker container...
-
-For a great example of building a manylinux1 wheel,
-I can suggest checking out the [pypa/python-manylinux-demo][manylinux demo] repository.
-Unfortunately it is not linked from the python packaging documentation
-and so is not that simple to find.
-
-
-Packaging in python is hard.
-I have over 70 builds this week on travis
-just trying to get everything to actually work.
-At the end of all this I still don't really know what I am doing
-other than basically everything I try doesn't work
-and that I shouldn't try any of the above,
-since I already know it won't work.
-
 
 [statdyn-analysis]: https://github.com/malramsay64/statdyn-analysis
 [python packaging user guide]: https://packaging.python.org/
@@ -408,3 +409,4 @@ since I already know it won't work.
 [auditwheel]: https://github.com/pypa/auditwheel
 [PEP 513]: https://www.python.org/dev/peps/pep-0513/#the-manylinux1-policy
 [manylinux demo]: https://github.com/pypa/python-manylinux-demo
+
