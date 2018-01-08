@@ -43,4 +43,4 @@ My research interests lie in the areas of
 statistical mechanics, machine learning, and data visualisation,
 along with a more general interest in the commercialisation of research.
 I graduated from the University of Sydney with a Bachelor of Science,
-1st Class Honours and 1st place in his cohort.
+1st Class Honours and 1st place in my cohort.
