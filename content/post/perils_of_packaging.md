@@ -125,26 +125,9 @@ setup(
 Problem is, when installing into a new environment via pip
 the install fails as reading the `setup.py` file requires
 both Cython and numpy to be installed as they are imported at the top of the file.
-Fortunately there is a fairly elegant solution,
-changing `my_extensions` to a function and importing the dependencies in the function.
-```
-# setup.py
-from setuptools import setup, Extension
-
-def my_extensions():
-    from Cython.Build import cythonize
-    import numpy
-    return cythonize[Extension(..., include_dirs=numpy.get_include())]
-
-setup(
-    name=...,
-    ...,
-    setup_requires=['Cython', 'numpy'],
-    install_requires=['numpy']
-    ...,
-    ext_modules=my_extensions(),
-)
-```
+This is a significant problem with python packaging 
+for which a solution has been accepted [PEP 518][PEP 518] and work is in [progress][pep 518 progress].
+In meantime, distributing a wheel is a solution to this problem.
 
 ## Wheels
 
@@ -390,6 +373,17 @@ with the correct hashes,
 which is fine while dependencies are not updated 
 and the Pipfile.lock file remains unchanged.
 
+---
+
+Update 2018-01-09
+
+In a previous revision of the Installing from Pip section
+I stated that importing the dependencies within a function call
+was a solution to the import problems.
+Thanks to [/u/vorpalsmith](https://www.reddit.com/r/Python/comments/7ope3j/a_guide_on_how_not_to_package_a_python_module/dscmwf5/)
+for bringing it to my attention that this isn't a solution,
+and that the success that I observed was a result of installing a wheel
+rather than any changes to the code that I made.
 
 [statdyn-analysis]: https://github.com/malramsay64/statdyn-analysis
 [python packaging user guide]: https://packaging.python.org/
@@ -409,4 +403,5 @@ and the Pipfile.lock file remains unchanged.
 [auditwheel]: https://github.com/pypa/auditwheel
 [PEP 513]: https://www.python.org/dev/peps/pep-0513/#the-manylinux1-policy
 [manylinux demo]: https://github.com/pypa/python-manylinux-demo
-
+[PEP 518]: https://www.python.org/dev/peps/pep-0518/
+[ptp 518 progress]: https://github.com/pypa/pip/issues/4802
