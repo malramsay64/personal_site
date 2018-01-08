@@ -36,7 +36,51 @@ This idea of specificity to improve performance
 is not just present in the programming languages we use,
 it is also also in the code we use and write.
 
-A
+Recently I needed to compute
+the number of Voronoi neighbours for
+about 2000 molecules in a simulation,
+and I needed it to be fast,
+performing the computation as a real time analysis.
+One of the standard programs for
+computing Voronoi cells in Molecular Dynamics simulations
+is [Voro++][voro++],
+a C++ library with support for
+periodic boundary conditions and
+2D or 3D simulations.
+There is already a python library, [tess][tess]
+which provides an interface to Voro++,
+however being a library,
+it is designed to be useful for a range of problems.
+To compute the number of neighbours,
+I first have to compute the Voronoi tessellation,
+which creates a list of python objects representing each Voronoi cell.
+I then need to loop over the cells
+computing the number of faces in each.
+
+    import tess
+    # Compute Voronoi tesselation
+    c = tess.Container(position, limits=box, periodic=True)
+    # Count number of neighbours/faces in 2D  = (3D - top - bottom)
+    num_neighs = [cell.number_of_faces() - 2 for cell in c]
+
+This would be a perfectly reasonable method of computing
+the number of Voronoi neighbours,
+except it is too slow for real time analysis,
+taking 250 ms to run.
+I need a performance increase of about 10x
+to have something that is really interactive.
+
+Much of the time in the above code is taken up by
+the generation of the Container object,
+so there is not much that can be done.
+There needs to be a significant shift
+in the approach taken to compute the neighbours.
+The tess package is designed to be general,
+take as much of the functionality of Voro++
+and make it available to python.
+I only care about the number of neighbours and
+none of the other functionality.
+
 
 <!--So I don't really know where I am going here,
 I have an excellent thesis
@@ -52,5 +96,8 @@ Essentially the idea that Python isn't slow,
 rather code to handle the general case is.
 -->
 
-
-[why python is slow]:
+[why python is slow]: https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/
+[voro++]: http://math.lbl.gov/voro++/
+[tess]: https://github.com/wackywendell/tess
+[pyvoro]: https://github.com/joe-jordan/pyvoro
+[ctyhon]: http://cython.org/
