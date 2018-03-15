@@ -2,7 +2,7 @@
 title = "Creating an HDF5 Bomb"
 date = "2018-03-15"
 
-draft = true
+draft = false
 math = false
 highlight = true
 +++
