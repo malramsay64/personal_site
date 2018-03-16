@@ -43,12 +43,14 @@ with pd.HDFStore('dataset.h5', mode='w', complevel=9, complib='bzip2') as dst:
     dst.append('data', df)
 ```
 A number of keyword arguments are set in opening the HDFStore file handle,
+
 - `mode='w'` ensures that a file with the same name is overwritten if it exists, making testing this
     out much simpler.
 - `complevel=9` sets the compression to the maximum possible not caring about the processing
     requirements of doing so.
 - `complib='bzip2'` sets the compression library to `bzip2` which had significantly better
     compression ratios than the default `zlib` in my testing of this.
+
 Additionally the `append` function has been used to write the DataFrame to disk
 since we want to create a dataframe that doesn't fit in memory,
 which will require appending to the file numerous times.
