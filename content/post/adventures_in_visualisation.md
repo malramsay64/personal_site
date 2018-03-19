@@ -1,5 +1,5 @@
 +++
-title = "Altair in Anger"
+title = "Adventures in the Python Visualisation Landscape"
 date = "2018-03-17"
 
 draft = false
