@@ -2,7 +2,7 @@
 title = "Altair in Anger"
 date = "2018-03-17"
 
-draft = true
+draft = false
 math = true
 highlight = true
 +++
@@ -69,7 +69,7 @@ you describe the data upon creating a dataset
 which can then very simply be expressed in a visualisation.
 Rather than being a library that actually creates the figure,
 Holoviews performs the reasoning about the dataset
-and passing that to Bokeh, Matplotlib, or Flatly
+and passing that to Bokeh, Matplotlib, or Plotly
 for the actual rendering.
 This was a huge draw of Holoviews,
 I could generate interactive visualisations in bokeh,
@@ -81,9 +81,9 @@ being different between the different output formats.
 The drawback of having this special annotated data object
 is that you lose all the flexibility of having a pandas DataFrame
 and the vast array of operations that allows.
-I care about this because my field of science 
+I care about this because my field of science
 has a long history of researchers taking some quantities,
-combining them in a way which gives 
+combining them in a way which gives
 an easily describable temperature dependence
 and calling it an astounding discovery.
 Which led me back to Altair,
@@ -100,63 +100,100 @@ both of which are relatively new and having teething problems.
 I had become much better at problem solving and navigating technical reference materials.
 Additionally, I made the connection that since Altair is based on the Vega-Lite specification,
 maybe I should have a look at the [Vega-Lite documentation][vega-lite docs].
-This was really helpful because they are well written, extensive and 
+This is particularly helpful because this documentation is currently more extensive than
+that for [Altair][altair docs].
+t
+
+a well written, extensive and
 easily navigable technical reference.
 
-It was reading this documentation that I finally understood the `transform_*` functions in Altair.
-These are a set of functions that perform computations on the dataset 
-to generate the resulting figure.
-An example of this is a canonical Altair example figure, the histogram.
-```
+It was reading this documentation that I finally understood the transform functions in Altair.
+These are a set of functions that perform computations on the input dataset to generate the resulting figure.
+This allows me to have a single canonical dataset,
+with data transformations like ratios of two quantities tied to the figure,
+rather than following awkwardly named variables around.
+
+An example of why this is useful is demonstrated using the cars dataset as an example.
+To make the data in the dataset useful for the majority of the world's population,
+it is possible to define the required unit conversions within the figure.
+
+```python
 import altair as alt
 from vega_datasets import data
 
-movies = data.movies.url
+cars = data.cars()
 
-chart = alt.Chart(movies).mark_bar().encode(
-    alt.X("IMDB_Rating:Q", bin=True),
-    y='count(*):Q',
+chart = alt.Chart(cars).mark_circle().transform_filter(
+    alt.expr.datum.Miles_per_Gallon > 0
+).transform_calculate(
+    'Fuel Economy (L/100 km)', '235.2 / datum.Miles_per_Gallon'
+).transform_calculate(
+    'Weight (kg)', 'datum.Weight_in_lbs * 0.45'
+)
+chart.encode(
+    x='Fuel Economy (L/100 km):Q',
+    y='Weight (kg):Q',
+    size='Acceleration:Q'
 )
 ```
-![Movies dataset represented as histogram on the IMDB_Rating][images/altair_hist.png]
+![Fuel economy (L/100km) vs weight (kg) from the cars dataset.](/static/img/altair-cars-metric.svg)
 
-In this example the aggregation is a 
+For my workflow this is hugely powerful,
+allowing me to have a master dataset for all figures
+from which I can calculate additional values as required.
+
+This computing of values,
+also extends to the computation of histograms,
+complete with shortened notation.
+Using the chart object from above it is possible to easily create a histogram
+
+```python
+chart.mark_bar().encode(
+    x=alt.X('Fuel Economy (L/100 km):Q', bin=True),
+    y='count():Q',
+)
+```
+![Histogram of the fuel economy in the cars dataset.](/static/img/altair-cars-hist.svg)
+
+Where setting `bin=True` will create bins with the default parameters,
+and the `count():Q` on the `y` axis counts the elements in each bin.
+Instead of `count()` it is also possible to perform other [aggregations][vega-lite aggregations],
+like computing the mean of a column.
+
+```python
+chart.mark_bar().encode(
+    x=alt.X('Fuel Economy (L/100 km):Q', bin=True),
+    y='mean(Weight (kg)):Q',
+)
+```
+![Histogram of the fuel economy in the cars dataset.](/static/img/altair-cars-weight.svg)
+
+For a more comprehensive view of using Altiar,
+have a look at either the [Example Gallery][altair example gallery],
+or a [case study][altair case study].
+
+Each of the visualisation libraries in python
+have their own strengths and weaknesses,
+types of visualisations they excel at,
+and others you wouldn't want to try.
+For me, while Altair does still have a some quirks,
+particularly in the handling of [large datasets][altiar notebook size],
+and a somewhat complicated method of [setting titles][altair setting titles],
+it provides a simple and intuitive interface to data
+which currently makes it the first tools I will reach for
+to understand a dataset.
 
 
-[Altair][altair-viz] is a relatively new addition to the python visualisation landscape,
-with the goal of making it simpler to investigate your data.
-I think that Altair really nails this goal,
-currently being my preferred plotting library
-(and I have tried a lot of them of late).
-However, while Altair makes it really simple to get started and explore a visualisation,
-it is more difficult to take the figure and make it publication ready,
-primarily because of a lack of good documentation.
-
-Firstly what do I mean by 'publication ready'.
-I view this as having the figure in a state that requires little additional understanding,
-so details including;
-- properly labelled axes,
-- axes scaled correctly, and
-- popper formatting of axes labels.
-
-To understand the formatting that is taking place here,
-it is important to understand that Altair is
-a wrapper around Vega-Lite.
-It takes your python code and converts it into a json string
-adhering to the Vega-Lite specification.
-Because of this the python code we are using
-closely matches the resulting json string.
-So to work out how to format something in Altair
-it is often easier to look up the comprehensive [Vega-Lite Documentation][vega-lite docs]
-and guess at the python code (which is basically the same).
-
-This is a complicated question with no single answer.
-Both the `X` and `Y` axes have labels set through the `axis` parameter,
 
 [jakevdp pycon vis]: https://youtu.be/FytuB8nFHPQ?t=3m53s
 [xkcd competing standards]: https://xkcd.com/927/
-[altiar 1.3]:
-[bokeh]:
-[bokeh server]:
+[bokeh]: https://bokeh.pydata.org/en/latest/
+[bokeh server]: https://bokeh.pydata.org/en/latest/docs/user_guide/server.html
 [holoviews]: https://holoviews.org
 [vega-lite docs]: https://vega.github.io/vega-lite/docs/
+[vega-lite aggregations]: https://vega.github.io/vega-lite/docs/aggregate.html#ops
+[altair docs]: https://altair-viz.github.io/index.html
+[altair example gallery]: https://altair-viz.github.io/gallery/index.html
+[altair case study]: https://altair-viz.github.io/case_studies/exploring-weather.html
+[altair notebook size]: https://github.com/altair-viz/altair/issues/249
+[altair setting titles]: https://github.com/altair-viz/altair/issues/585
