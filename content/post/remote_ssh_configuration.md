@@ -2,7 +2,7 @@
 title = "A guide to setting up remote SSH"
 date = "2018-04-09"
 
-draft = true
+draft = false
 math = true
 highlight = true
 +++
@@ -19,7 +19,7 @@ is to run
 $ ssh localhost
 ```
 
-If ssh is not installed or running 
+If ssh is not installed or running
 this will print out a message
 
 ```
@@ -34,7 +34,6 @@ for all of the accounts on the device,
 in particular the root account (even better is disabling it).
 By enabling remote access for yourself
 you are also enabling remote access for anyone else that might want to try and log in.
-
 
 ## Installation
 
@@ -111,7 +110,6 @@ we need to work out how to connect from a remote machine.
 
 ## How do I Find My Device?
 
-
 With the previous commands we have been passing `localhost` to the ssh command,
 in the same way we might type `google.com` into a web browser.
 These names are a human readable format for addressing devices,
@@ -134,7 +132,7 @@ With the full hostname,
 we know the name of our device,
 and we know that our device is aware of it's hostname.
 This doesn't necessarily mean that any other devices know what ours is called.
-The process of taking a hostname and turning it into an address 
+The process of taking a hostname and turning it into an address
 the computer can use is known as DNS,
 which is provided by name servers.
 Typically in organisations there are multiple levels of name servers,
@@ -170,7 +168,6 @@ Address:        1.1.1.1#53
 ** server can't find lovelace.staff.sydney.edu.au: SERVFAIL
 ```
 
-
 ## Setting the hostname
 
 When going through the initial setup of macOS or linux machines,
@@ -205,7 +202,7 @@ being the short version `lovelace` and the FQDN `lovelace.malramsay.com`.
 
 The reason we use domain names and hostnames
 is that they are far easier to remember than a string of numbers.
-It is possible to navigate to Google by navigating to the ip address [216.58.200.110](https://216.58.200.110)
+It is possible to navigate to Google by navigating to the ip address [216.58.200.110](http://216.58.200.110)
 which is the address returned for google.com.
 
 ``` txt
@@ -224,9 +221,8 @@ For a single IP address which we can put in a configuration file,
 this isn't too problematic.
 
 To find the ip address of the current host
-run the command `ip addr`, 
+run the command `ip addr`,
 which will give output like that below.
-
 
 ``` txt
 $ ip addr
@@ -252,7 +248,6 @@ en7: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
  >      inet 10.65.205.200/24 brd 10.65.205.255 en7
 ```
 
-
 The lines we are looking for are those with `inet` at the start
 which I have denoted with a `>`.
 
@@ -260,7 +255,7 @@ This gives me two IP addresses,
 one for the wifi and another for the wired ethernet connection.
 You may have noticed that the `10.65.205.200` address matched that obtained
 from the `nslookup` of my hostname above.
-This tells me that the name server is directing 
+This tells me that the name server is directing
 queries of my hostname back to my device.
 
 Now we have an ip address,
@@ -269,10 +264,15 @@ when the name server doesn't.
 
 ## Remembering IP addresses
 
+The DNS lookup of IP addresses from hostnames works on
+the institutional network I have access to at the University of Sydney.
+You will likely not have this same configuration,
+so there are some alternate methods
+for getting your computer to remember ip addresses.
 
 ### SSH configuration file
 
-The simplest method of getting the computer 
+The simplest method of getting the computer
 to remember an ip address for you is the ssh config file `~/.ssh/config`.
 This approach only works when connecting using ssh,
 however, it is useful for setting all the parameters for an ssh connection.
@@ -301,7 +301,7 @@ all the parameters available and information about each of them.
 Earlier we modified the `/etc/hosts` file to change the hostname of our system.
 We can also use it to remember the ip address of other systems.
 This is not recommended for managing many devices, use DNS for that,
-for a small number of systems we can use use this file for the translation of 
+for a small number of systems we can use use this file for the translation of
 domain names to ip addresses.
 Instead of using the ip address of localhost,
 we use the ip address we want the hostname to resolve to as shown below.
@@ -312,7 +312,7 @@ we use the ip address we want the hostname to resolve to as shown below.
 
 The advantage this approach has over the ssh configuration
 is that it will also resolve the hostname in the web browser.
-This also makes it much easier to access web services 
+This also makes it much easier to access web services
 like jupyter notebooks on the remote host.
 
 ## Conclusion
