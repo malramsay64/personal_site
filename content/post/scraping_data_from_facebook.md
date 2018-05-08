@@ -7,45 +7,44 @@ math = false
 highlight = true
 +++
 
-Competition is a strange thing.
-I am a member of The Lancer Band, 
-a Regimental band of the Australian Army,
-and it has become a tradition for us to create a music video for release 
-as a component of ANZAC Day commemorations.
+Competition is a strange thing
+making you suddenly interested in the most unusual of problems
+It has become a tradition of The Lancer Band,
+of which I am a member,
+to produce a video as part of our ANZAC Day commemorations.
 These videos have been highly successful
-garnering millions of views on Facebook.
-These viral successes 
-along with some great communication throughout the rest of the year
-have resulted in a fairly significant social media following,
-especially when compared to other similar pages.
+garnering millions of views on Facebook and
+with some choice communications throughout the rest of the year
+have resulted in a commendable social media following.
 
 After a successful drive to raise the number of page likes this year,
-we became more interested in how we compared to a whole host of other pages,
+we became more interested in how we compared to other similar pages,
 from other service bands in Australia,
 to other units of the Australian Army.
-Rather than manually collating this data manually,
-I looked to find a solution to how we could automate this process.
-Both to have up to date data,
-and to be able to capture and store historical data
-allowing us to create our own metrics on how we and all the comparable pages are growing.
+Rather than manually collating all this data manually,
+I looked for an automated solution for this process,
+both to have up to date data,
+and to store historical data
+allowing for comparisons with these pages over time.
 
-The method recommended by the internet for getting any data from Facebook 
+The method the internet recommends for getting data from Facebook
 is through their [GraphAPI][graph-api],
-a method of using http requests to get any specific data from a page.
-The first step in using the GraphAPI is to get an access token,
-the simplest method is by logging into the [GraphAPI Explorer][graph-api explorer],
-a web based tool for testing out GraphAPI.
-In getting an access token from the GraphAPI Explorer,
+a method of using http requests query specific data.
+The first step in using the GraphAPI is getting an access token,
+the simplest method though logging into the [GraphAPI Explorer][graph-api explorer],
+a web based tool for testing GraphAPI.
+In the process of getting an access token from the GraphAPI Explorer,
 a prompt will ask for the permissions granted to the access token.
-Uncheck all the permissions as they are not required for this example.
+You can uncheck all the permissions since they are not required for this example.
 The more permissions granted to an access token,
-the more data from the GraphAPI is accessible.
-The data field of interest is the `fan_count`,
-which is the number of users who like the page,
-found in the [documentation][graph-api page ref] under the page reference.
+the more data from the GraphAPI is accessible,
+here interested in the `fan_count`, which is the number of users who like the page.
+Documentation for this value,
+and all the other values can are available in the [page documentation][graph-api page ref].
 
-Putting all this together it is possible to query the GraphAPI in python using requests
-as in the code example below.
+With the page and data field to query and the access token,
+it is possible to query the GraphAPI in python
+using the requests package as in the code example below.
 
 ```python
 import requests
@@ -55,73 +54,68 @@ ret = requests.get(f'https://graph.facebook.com/{page}', params={'fields': 'fan_
 ret.json()['fan_count']
 ```
 
-Note that you will need to copy the access token 
-generated from the [GraphAPI Explorer][graph-api explorer] into the token variable.
+Note that you will need to replace `<access_token>` with the token
+generated from the [GraphAPI Explorer][graph-api explorer].
 At the time of writing [The Lancer Band][thelancerband] has 6546 likes,
-which is the value I got when I ran the code snippet above.
-Hopefully when you are reading this the result you get is somewhat larger.
+which is the value output when I ran the code snippet above.
+Hopefully when you are try this the result is somewhat larger.
 
-While the GraphAPI does have a relatively simple interface for querying
+While the GraphAPI has a relatively simple interface for querying
 many different types of data,
-it has a fairly significant drawback for accessing data over time.
-The access tokens that are required for the API calls have a time based expiry,
-in the case of the GraphAPI Explorer tokens this expiry is 1 hour.
-This means that basically every time I want to perform the data collection
-I need to get a new token.
-The solution to being able programmatically generate access tokens
-is to create a Facebook application.
+it has a fairly significant drawback for accessing data over periods of time.
+The access tokens for the GraphAPI Explorer have an expiry of 1 hour,
+meaning nearly every time you want to perform data collection you need a new token.
+Programmatically generating access tokens requires the creation of a Facebook application.
 While this sounds simple enough,
-to create an app with the lowest set of permissions 
-requires getting the ape reviewed and accepted by Facebook.
-Far more work than I want to put into this.
-While this is fair enough with all the personal information 
+it requires getting the app reviewed and accepted by Facebook,
+far more work than I was willing to put into this.
+While these requirements are fair enough for all the personal information
 having access to a Facebook profile provides,
 I only want to access the publicly available likes data of a page.
 
-With all the restrictions and effort required
+With all the effort required
 to go through the 'proper' methods to obtain this data,
-I became really interested in alternate approaches.
-As far as I can discern as a python developer from the scientific realm,
-some of the key packages for dealing with websites are;
+I looked for alternate approaches.
+As far as I can discern coming from the scientific realm,
+two of the key packages for collecting and processing data from websites
 
 - **[requests][]** for an interface with http requests and responses
 - **[beautifulsoup4][]** which provides an interface
     for extracting information from a returned html/xml document.
 
 We are going to use requests to get the page which has the number of likes contained on it,
-then use beautifulsoup4 to extract the number we require.
+then use beautifulsoup4 to extract the number required.
 
-We can get the web address required by navigating Facebook manually,
-which is the [community page].
-We can get this page using the below code snippet;
+Finding the web address to use in the request is a case of navigating Facebook manually,
+with the number of likes appearing on the community page
+having the url [https://facebook.com/pg/thelancerband/community][].
+The contents of this page can be downloaded using the code snippet below;
 
 ```python
 import requests
 page_name = "thelancerband"
-community_page = requests.get(f"https://facebook.com/pg/{page}/community")
+community_page = requests.get(f"https://facebook.com/pg/{page_name}/community")
 ```
 
-By changing the `page_name` variable,
-most likely in a loop,
-we are able to easily loop over many different Facebook pages.
-
-Now we have the html,
-we need to extract the number of likes.
-Printing the entire returned page
+This gets the html,
+from which we need to extract the number of likes.
+Printing the entire returned page to output
 
 ```python
 community_page.text
 ```
 
-and searching for 'Total Likes'
+gives a huge wall of text.
+Using the search functionality to look for instances of 'Total Likes'
+finds the following code snippet
+
 
 ```html
-<div class="_3xom">6,546</div><div class="_3xok">Total Likes</div>
+...<div class="_3xom">6,546</div><div class="_3xok">Total Likes</div>...
 ```
 
-we find a collection of `div` elements surrounding text of 'Total Likes', and the number of likes.
-The number of likes is in the div element prior to that of the div containing the text `Total Likes`.
-Beautifulsoup4 allows us to programmatically traverse the document in a similar method.
+The number of likes is in the div element preceding the div containing the text `Total Likes`.
+Beautifulsoup4 allows us to programmatically traverse the document in a similar logic
 
 ```python
 from bs4 import BeautifulSoup
@@ -129,17 +123,20 @@ document = BeautifulSoup(community_page, 'html.parser')
 document.find(text='Total Likes').parent.previous
 ```
 
-Here we are searching for text matching 'Total Likes',
-which returns a reference to that value.
-The value we want to extract is the content of the previous div element,
-by taking the parent element then previous element we extract the value of interest.
+Here we search for text matching 'Total Likes',
+which returns a reference to that location in the document.
+The number of likes is the content of the previous div element,
+by taking the parent element to select the surrounding div,
+then the previous element we extract the value of the previous div element.
 
-This returned value is not in the appropriate format for a straight conversion to an int,
-having a comma as the thousands separator and for large numbers using the SI prefixes `k`, `M`, etc...
-The quick and dirty method of dealing with the comma is using `str.replace(',', '')`,
-though a real project should use the locale module as described on [stackoverflow][locale commas].
+With the total number of likes as string,
+we need to reformat it to convert to an integer.
+This involves removing the comma as the thousands separator and
+the SI prefixes `k`, `M`, etc. when the likes are in the hundreds of thousands or more.
+The quick and dirty method of removing the comma is using `str.replace(',', '')`,
+though a real project should use the `locale` module as described on [stackoverflow][locale commas].
 A simple fix for the prefixes is installing the [humanfriendly][] package,
-which has a function `humanfriendly.parse_size()` which will handle with the prefixes.
+and using the `humanfriendly.parse_size()` function which will handle the prefixes.
 This results in the code for getting likes from a list of pages looking like that below.
 
 ```python
@@ -163,11 +160,15 @@ for page in page_list:
     print(f'The Facebook page for {page} has {get_num_likes(page)} likes')
 ```
 
-This will print the results to the screen,
-which is not useful for longer term analysis.
-There are many different methods for saving this data for later analysis.
+This prints the results to the screen,
+which is not useful for longer term analysis
+although it is easy to see that everything is working as expected.
+
+There are many different methods for storing this data for later analysis,
+from a simple csv file to a sqlite database.
 I am most familiar with pandas and HDF5 files,
-so my loop looked like;
+hence these were my tools of choice
+resulting in the data collection loop below.
 
 ```python
 import pandas
@@ -184,12 +185,12 @@ df.set_index('time').to_hdf('likes_data.h5', 'data', format='table', append=True
 
 Note that the `tables` package is also a requirement for this code snippet to work.
 
-This is my first foray into extracting data from websites
-for use in data analysis.
-With the appropriate tools,
-putting together a simple application is relatively painless.
+This is my first foray into scraping websites for data analysis
+which is surprisingly simple with the appropriate tools.
 The biggest issue I encountered in this project
-was working out how to get a Facebook authentication token.
+was trying to understand the Facebook authentication tokens.
+While this is a simple example,
+it can easily be extended for different use cases.
 
 
 [graph-api]: https://developers.facebook.com/docs/graph-api
@@ -201,3 +202,4 @@ was working out how to get a Facebook authentication token.
 [requests]: http://docs.python-requests.org/en/master/
 [locale commas]: https://stackoverflow.com/questions/1779288/how-do-i-use-python-to-convert-a-string-to-a-number-if-it-has-commas-in-it-as-th
 [humanfriendly]: https://pypi.org/project/humanfriendly/
+[lancerband likes]: https://github.com/malramsay64/lancerband-likes
