@@ -2,7 +2,7 @@
 title = "Experi: A tool for computational experiments"
 date = "2018-06-25"
 
-draft = true
+draft = false
 math = false
 highlight = true
 +++
