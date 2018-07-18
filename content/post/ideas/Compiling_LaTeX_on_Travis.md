@@ -1,89 +1,177 @@
-++
++++
 title = "Compiling LaTeX on Travis-CI"
 date = "2018-07-16"
-
 draft = true
 math = true
 highlight = true
 +++
 
-Currently in software development these is a proliferation of services offering Continuous
-Integration (CI) and Continuous Delivery (CD). These are services that act as part of a git
-workflow ensuring that an application works as expected by compiling and running tests (CI).
-Should the code pass all the test requirements, it will see real world use (CD). This paradigm
-takes the processes that you should be performing often, like running test suites, or compiling
-the code and automates them so they actually occur.
+One of the best parts of the current software development environment is the proliferation of
+Continuous Integration (CI) services like [Travis-CI]. These CI services plug into GitHub or other
+code repositories to automatically run when new code is pushed to a repository. Typically CI is
+used for running automated testing every time new code is added so you can be reasonably confident
+that a change hasn't broken any functionality. The premise of CI is taking tedious tasks like
+running tests and automating them.
 
-Why would you want to use the CI/CD paradigm for LaTeX documents? Why not just build on my local
-machine? When
-Using the CI/CD paradigm for LaTeX
-- Ensure all the required files like images are included in the repository
-- Have a method of managing multiple document versions
-- conduct the compilation of the entire document more regularly
-- ability to set up automated checks
-- Ensure the entire process works, not just because I have a file left over from something else
+When writing a LaTeX document the most tedious task is running the compilation step. Particularly
+for large documents it can take a long time and when you only run the compilation irregularly
+there are invariably a whole collection of errors that have accumulated. Additionally the
+compilation of LaTeX documents is often highly machine dependent, only compiling properly on your
+machine for some unknown reason. The final issue with LaTeX documents is ensuring that all the
+files required for the compilation are included in the repository and not just hiding in a
+directory somewhere on your local filesystem.
 
-- Introduction to CI/CD
-    - Why it is used in code
-    - Why it can be useful for LaTeX docs
+As a way of getting around these issues in the write-up of my PhD thesis, I have developed a
+configuration for building LaTeX documents on Travis-CI. While I have found other methods for
+compiling LaTeX documents on Travis-CI, all the other methods I have found have compromises. I
+want a system that is;
 
-One of the biggest challenges for creating a CI configuration for LaTeX is that there is no
-pre-configured image on CI providers. The closest to a configured server is the R container on
-travis-CI which has a base installation of the TexLive distribution. A problem with LaTeX is there
-is no simple method of working out which packages are required to build a document, an issue with is
-particularly difficult when dealing with different version numbers. Another significant issue is
-that downloading the entire TexLive distribution takes a really long time, with the same issue when
-using a docker container with the entire TexLive distribution.
+- *fast*, with builds completing in a couple of minutes
+- *adaptable*, not having to manually specify every package I use
+- *extensible*, I can easily use [pandoc] to convert files to LaTeX before compilation
+- uses `biber`, the best practice for compiling the references
 
-- Challenges for LaTeX
-    - The complete TeXLive distribution takes forever to download
-    - No simple way of specifying and updating the packages required
-    - NO CI provider offers a complete LaTeX environment
-        - closest is the R container on Travis CI
-        - only offers the base packages
+## Choosing a LaTeX Distribution
 
-There are a number of different LaTeX distributions, all of which are slightly different. The
-TeXLive distribution is the distribution provided with most linux distributions. While being the
-canonical distribution the management of packages is difficult, with the recommended
+There are a number of different methods to get a distribution of LaTeX installed. The main method
+for Linux is the TeXLive distribution which is typically installed via the package manager. The
+base TeXLive distribution is pre-installed on the Travis-CI image for A. However, this is only the
+core extensions and so this approach is either *fast* in that the image just boots up, or
+*adaptable* by downloading `texlive-full` which takes a long time.
 
-- Solutions
-    - TeXLive
-        - too large to download completely
-        - have to manually spec packages to download
-        - Is installable using apt assuming you have the correct packages
-            - You have to perform the entire installation each time
-        - Docker container
-            - Large image
+The key issue I had with the TeXLive distribution was the lack of automatically downloading
+required packages. A LaTeX distribution that does download packages automatically is [MiKTeX],
+which has an installer that is only 200 MB compared to the ~3 GB of the complete TeXLive. MiKTeX
+also provides a [docker container][MiKTeX docker] which is a great method of having exactly the
+same environment for compiling locally and with a CI service. Unfortunately MiKTeX doesn't install
+the `biber` binary on Linux (or macOS)[^1]. While it is possible to create a new Docker which does
+include the `biber` binary, this deficiency highlights that extending a Docker container is
+non-trivial which makes this approach less favourable. That said, for other Docker-centric CI
+services this could be an excellent approach.
 
-    - MikTex
-        - Docker image available
-        - Can download required packages automatically
-        - Biber is only supported on Windows
-            - I don't want to try and deal with CI in windows
+Another much less well known and newer LaTeX distribution is [Tectonic] which is still considered
+beta software. However, it works for most scenarios and it has a lot of features that make it
+suitable for CI. I would recommend installation with [conda][Tectonic conda] although there are a
+range of [installation methods][Tectonic install] for both Linux and macOS (currently no Windows
+support). Like MiKTeX, Tectonic will automatically download all the packages required to compile a
+document, making the same configuration *adaptable* to many different configurations. Having conda
+as an installation method is also really useful, allowing a simple installation of many other
+tools (like [pandoc]) which are required to compile a document. The only requirement not satisfied
+by Tectonic is the automatic installation of `biber`. Although not supported natively, it is
+[possible to use biber with tectonic][Tectonic #53] as long as the binary for biber 2.5 is
+installed from [Sourceforge][biber 2.5].
 
-    - Tectonic
-        - A relatively new project
-        - Complete standalone (nearly) binary
-        - Installable using conda
-        - Downloads required packages automatically
-        - No support for biber
+### Compiling Documents with Tectonic
 
-    - There are no really good solutions for compiling latex documents using CI
-        - at least none that I have found
+```Makefile
+# makefile
 
-- MY solution
-    - Of the options above I like tectonic the best
-        - Installable using conda
-            - package manager I use for all the rest of my code
-            - Really easy to use and install
-            - I have travis scripts already using conda
-        - Pandoc is also installable using conda
-            - The workflow for LaTeX I want is markdown to .tex to .pdf
-                - or just skip the tex part
-            - Pandoc does the conversion, either to .tex or straight to .pdf using latex
-        - Biber download binary from sourceforge
+# directory to put build files
+build_dir := output
 
-- Code
+.PHONY: all
+
+all: document.pdf
+
+%.pdf: %.tex | $(build_dir)
+	tectonic -o $(build_dir) --keep-intermediates -r0 $<
+	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); fi
+	tectonic -o $(build_dir) --keep-intermediates $<
+	cp $(build_dir)/$(notdir $@) .
+
+$(build_dir):
+	mkdir -p $@
+```
+
+If you want to continue using your standard latex build tool locally which in my case is `latexmk`,
+you can check whether the `TRAVIS` environment variable is defined as in the example below.
+
+```makefile
+%.pdf: %.tex | $(build_dir)
+ifdef TRAVIS
+	tectonic -o $(build_dir) --keep-intermediates -r0 $<
+	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); fi
+	tectonic -o $(build_dir) --keep-intermediates $<
+else
+	latexmk -outdir=$(build_dir) -pdf $<
+endif
+	cp $(build_dir)/$(notdir $@) .
+```
+
+The `TRAVIS` environment variable is defined on all Travis instances and to test the code locally
+you can use the command
+
+```bash
+TRAVIS=true make
+```
+
+which sets the variable for that command. Note that you will want to run a `make clean` between
+running with the different build systems since there will be some incompatibility with version
+numbering.
+
+## Configuring Travis CI
+
+With a LaTeX distribution that is suitable for CI in [Tectonic], how do I actually use Travis CI?
+
+1. Create a public repository on GitHub. Travis CI only works with GitHub and while it does work
+   with private repositories they requires a paid account with Travis.
+2. Using your GitHub account, sign in to [GitHub][travis-ci app] and add the Travis CI app to the
+   repository you want to activate. You'll need Admin permissions for that repository.
+3. Once signed in to Travis CI, go to your profile page and enable the repository you want to
+   build.
+4. Create a `.travis.yml` file in the repository which tells Travis CI what to do. What you need
+   to put in the file is addressed [below]({{ <ref "#travis.yml"}}).
+
+### Creating a .travis.yml file {#travis.yml}
+
+The [`.travis.yml`][travis.yml file] I have developed are linked for download and are
+also explained below.
+
+```yaml
+# .travis.yml
+language: generic
+
+cache:
+  directories:
+    - $HOME/.cache/Tectonic
+    - $HOME/miniconda
+    - $HOME/downloads
+
+before_install:
+  - mkdir -p $HOME/downloads
+  - mkdir -p $HOME/bin
+
+  # Download and install biber installing executable as biber2.5
+  - |
+    if [ ! -f $HOME/downloads/biber.tar.gz ]; then
+      wget https://sourceforge.net/projects/biblatex-biber/files/biblatex-biber/2.5/binaries/Linux/biber-linux_x86_64.tar.gz -O $HOME/downloads/biber.tar.gz
+    fi
+  - tar xvzf $HOME/downloads/biber.tar.gz -C $HOME/bin
+  - mv $HOME/bin/biber $HOME/bin/biber2.5
+  - export PATH="$HOME/bin:$PATH"
+
+  # Download and install conda
+  - |
+    if [ ! -f $HOME/downloads/miniconda.sh ]; then
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/downloads/miniconda.sh
+    fi
+  - bash $HOME/downloads/miniconda.sh -b -u -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+
+    # Install tectonic
+  - conda install -y -c conda-forge tectonic
+
+script:
+  - make
+```
+
+
+6. Add the `.travis.yml` file to the repository and 
+
+## Deploying to GitHub Releases
+
+5. Install the travis [command line client][travis.rb] which will be used to configure 
 
 - Deployment
     - With the document compiling, how do we save it somewhere useful
@@ -101,6 +189,16 @@ canonical distribution the management of packages is difficult, with the recomme
             - This keeps continuity of versions even with printed documents
 
 - Conclusion
-    - This should work for almost all latex Documents
+    - This should work for most latex Documents
     - Tectonic compiles using xetex for unicode and font support
 
+[^1]: I should note that MiKTeX will install `biber` on a Windows system. So if you wanted to set
+    up a Windows CI config I guess MiKTeX is a great approach.
+
+[Tectonic conda]: https://tectonic-typesetting.github.io/en-US/install.html#the-anaconda-method
+[Tectonic install]: https://tectonic-typesetting.github.io/en-US/install.html
+[Tectonic #53]: https://github.com/tectonic-typesetting/tectonic/issues/53
+[biber 2.5]: https://sourceforge.net/projects/biblatex-biber/files/biblatex-biber/2.5/binaries/
+[travis-ci getting started]: https://docs.travis-ci.com/user/getting-started/
+[travis-ci app]: https://github.com/marketplace/travis-ci/plan/MDIyOk1hcmtldHBsYWNlTGlzdGluZ1BsYW43MA==#pricing-and-setup
+[travis.rb]: https://github.com/travis-ci/travis.rb#installation
