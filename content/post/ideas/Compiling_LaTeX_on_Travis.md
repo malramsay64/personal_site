@@ -75,7 +75,10 @@ all: document.pdf
 
 %.pdf: %.tex | $(build_dir)
 	tectonic -o $(build_dir) --keep-intermediates -r0 $<
-	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); fi
+	# Run biber if we find a .bcf file in the output
+	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then \
+		biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); \
+	fi
 	tectonic -o $(build_dir) --keep-intermediates $<
 	cp $(build_dir)/$(notdir $@) .
 
@@ -90,7 +93,10 @@ you can check whether the `TRAVIS` environment variable is defined as in the exa
 %.pdf: %.tex | $(build_dir)
 ifdef TRAVIS
 	tectonic -o $(build_dir) --keep-intermediates -r0 $<
-	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); fi
+	# Run biber if we find a .bcf file in the output
+	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then \
+		biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); \
+	fi
 	tectonic -o $(build_dir) --keep-intermediates $<
 else
 	latexmk -outdir=$(build_dir) -pdf $<
@@ -167,11 +173,46 @@ script:
 ```
 
 
-6. Add the `.travis.yml` file to the repository and 
+6. Add the `.travis.yml` file to the repository and
 
 ## Deploying to GitHub Releases
 
-5. Install the travis [command line client][travis.rb] which will be used to configure 
+Having configured Travis to compile our document on every commit, it would be nice to actually do
+something with the resulting document. Every repository on GitHub has releases, which can be
+accessed by clicking on the releases link which is outlined in red on the image below.
+
+![The link to the releases page on github][static/latex_travis/releases.jpg]
+
+GitHub automatically creates a release for every tagged commit in the repository, creating a
+downloadable `.zip` and `.tar.gz` of the state of the repository at that commit. It is also possible
+to edit each of the releases, adding release notes or additional files like installers for a
+variety of platforms. In this case we are going to use the GitHub releases to store the compiled
+document for each tagged release providing a historical view of the document which is linked to the
+code generating it.
+
+In writing of my PhD thesis it makes sense to tag releases using [Semantic Versioning], or at least
+[a version of it][thesis semver]. Other documents are much less linear, it might make sense to tag a
+talk with the location it will be given, or the name of the conference. The requirements are
+basically use numbers, letters and any of `._-+/` --- see the [git-check-ref-format] documentation for more
+specific details)[^2].
+
+You can create a tag `my_tag` for a release by running the command
+
+```bash
+git tag -a my_tag
+```
+
+which will open an editor to write a message. A typical tag message is `<repository name> <tag>`
+although feel free to include whatever you like. Like commit messages, you can specify the message
+with the `-m` option. By default, git doesn't push tags to a remote, requiring the `--tags` option
+
+```bash
+git push --tags
+```
+
+Before pushing tags to GitHub, you are going to want to configure Travis to upload releases to
+GitHub. The best method for this is to use the travis command line client, which can be installed
+by following [these instructions][travis install].
 
 - Deployment
     - With the document compiling, how do we save it somewhere useful
@@ -191,9 +232,13 @@ script:
 - Conclusion
     - This should work for most latex Documents
     - Tectonic compiles using xetex for unicode and font support
+    - To see this in action check out the two repositories I am using it with usyd-beamer-theme,
+    phd-thesis.
 
 [^1]: I should note that MiKTeX will install `biber` on a Windows system. So if you wanted to set
     up a Windows CI config I guess MiKTeX is a great approach.
+[^2]: There are more special characters supported, I just listed the most common ones. See the
+    [docs][git-check-ref-format].
 
 [Tectonic conda]: https://tectonic-typesetting.github.io/en-US/install.html#the-anaconda-method
 [Tectonic install]: https://tectonic-typesetting.github.io/en-US/install.html
@@ -202,3 +247,7 @@ script:
 [travis-ci getting started]: https://docs.travis-ci.com/user/getting-started/
 [travis-ci app]: https://github.com/marketplace/travis-ci/plan/MDIyOk1hcmtldHBsYWNlTGlzdGluZ1BsYW43MA==#pricing-and-setup
 [travis.rb]: https://github.com/travis-ci/travis.rb#installation
+[Semantic Versioning]:
+[thesis semver]:
+[git-check-ref-format]: https://git-scm.com/docs/git-check-ref-format
+[travis install]: https://github.com/travis-ci/travis.rb#installation
