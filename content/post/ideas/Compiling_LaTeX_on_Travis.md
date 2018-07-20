@@ -119,6 +119,11 @@ numbering.
 
 With a LaTeX distribution that is suitable for CI in [Tectonic], how do I actually use Travis CI?
 
+This is a complicated process, which took me 81 attempts to get right. I hope this guide helps you
+in making significantly fewer than me. The outline of the steps is below. The first three are
+configuring and linking your accounts on GitHub and Travis. The rest of the steps are explained in
+more detail in the rest of this document.
+
 1. Create a public repository on GitHub. Travis CI only works with GitHub and while it does work
    with private repositories they requires a paid account with Travis.
 2. Using your GitHub account, sign in to [GitHub][travis-ci app] and add the Travis CI app to the
@@ -126,54 +131,81 @@ With a LaTeX distribution that is suitable for CI in [Tectonic], how do I actual
 3. Once signed in to Travis CI, go to your profile page and enable the repository you want to
    build.
 4. Create a `.travis.yml` file in the repository which tells Travis CI what to do. What you need
-   to put in the file is addressed [below]({{ <ref "#travis.yml"}}).
+   to put in the file is addressed [below]({{<ref "#travis.yml" >}}).
+5. Commit the `.travis.yml` file to the repository and push to GitHub. Travis will see the commit
+   and start the build process.
+6. Any further commits to the repository, whether to the master branch, other branches, tags, or
+   pull-requests will trigger a build on Travis.
 
 ### Creating a .travis.yml file {#travis.yml}
 
-The [`.travis.yml`][travis.yml file] I have developed are linked for download and are
-also explained below.
+The `.travis.yml` file is comprised of a number of sections which I have described individually
+below. The complete file is available for [download][.travis.yml]. To get Travis to start building
+your repository, commit the `.travis.yml` file to the repository and push the commit to GitHub.
+
+The first part of the `.travis.yml` file is specifying the [language][travis language], which is
+choosing which of the base containers to use for the compilation.[^3] Since we are using conda for
+installing any dependencies we can use the `minimal` image.
 
 ```yaml
-# .travis.yml
-language: generic
+language: minimal
+```
 
+The next part is the cache, where I added the `$HOME/.cache/Tectonic` directory. This is where
+tectonic stores the downloaded tex packages. Rather than downloading all the packages required on
+every build, the state of this entire directory will be downloaded at the start of the build and
+updated when changed at the end of the build. This significantly speeds up the build process.
+
+```yaml
 cache:
   directories:
     - $HOME/.cache/Tectonic
-    - $HOME/miniconda
-    - $HOME/downloads
+```
 
+An additional directory that can be cached is `$HOME/miniconda` so the conda packages are also
+pre-installed on every build. This is less of a speed-up, although it can be helpful.
+
+The next step is specifying the steps to occur `before_install`. Travis has a number of steps in the
+[lifecycle of a build][travis build lifecycle] providing ways of breaking the build into logical
+steps. Each item in the list below is a bash command, which is run to update the environment of the
+test container. This downloads and installs both biber and conda, with conda then being used to
+install tectonic. Any other dependencies that are required can also be added to this step, say if
+you are converting Markdown to LaTeX with pandoc you could add `conda install pandoc`.
+
+```yaml
 before_install:
   - mkdir -p $HOME/downloads
   - mkdir -p $HOME/bin
 
   # Download and install biber installing executable as biber2.5
-  - |
-    if [ ! -f $HOME/downloads/biber.tar.gz ]; then
-      wget https://sourceforge.net/projects/biblatex-biber/files/biblatex-biber/2.5/binaries/Linux/biber-linux_x86_64.tar.gz -O $HOME/downloads/biber.tar.gz
-    fi
+  - wget https://sourceforge.net/projects/biblatex-biber/files/biblatex-biber/2.5/binaries/Linux/biber-linux_x86_64.tar.gz -O $HOME/downloads/biber.tar.gz
   - tar xvzf $HOME/downloads/biber.tar.gz -C $HOME/bin
   - mv $HOME/bin/biber $HOME/bin/biber2.5
   - export PATH="$HOME/bin:$PATH"
 
   # Download and install conda
-  - |
-    if [ ! -f $HOME/downloads/miniconda.sh ]; then
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/downloads/miniconda.sh
-    fi
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/downloads/miniconda.sh
   - bash $HOME/downloads/miniconda.sh -b -u -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
 
     # Install tectonic
   - conda install -y -c conda-forge tectonic
+```
 
+The final step is the script, the code that is used to determine success or failure. Like the
+before_install section, this is a list of commands which are executed one after another. Unlike the
+before_install section all these commands are run, even when a command fails.
+
+```yaml
 script:
   - make
 ```
 
-
-6. Add the `.travis.yml` file to the repository and
+The script section is also where you can add any other checks, like ensuring you haven't left in any
+TODOs, or swearing. You can run any code you like and if the exit code is zero it is deemed successful,
+while a non-zero exit code is a build failure. Note that a failing build will not go on to produce
+a release.
 
 ## Deploying to GitHub Releases
 
@@ -210,24 +242,48 @@ with the `-m` option. By default, git doesn't push tags to a remote, requiring t
 git push --tags
 ```
 
-Before pushing tags to GitHub, you are going to want to configure Travis to upload releases to
-GitHub. The best method for this is to use the travis command line client, which can be installed
-by following [these instructions][travis install].
+Before pushing tags, you are going to want to configure Travis to upload releases to
+GitHub. The best method for this is to use the Travis command line client, which can be installed
+by following [these instructions][travis install]. Once installed you can run the command
 
-- Deployment
-    - With the document compiling, how do we save it somewhere useful
-    - Travis-CI deployments
-        - I am deploying to GitHub to keep everything in a single location
-        - can also deploy to others https://docs.travis-ci.com/user/deployment
-        - or just use a script to upload somewhere
-            - make sure to not include your credentials
-    - I have chosen to use github releases
-        - every time I tag a commit `git tag <tag>` a new version is uploaded to the releases
-        - I am using a semver like approach so my tags are `v0.1.0`, `v0.1.1` ...
-        - This keeps every historical release so you can go back in time
-        - When I tag a commit, I also update a version number in the document, which is on the
-            footer of every page.
-            - This keeps continuity of versions even with printed documents
+```bash
+travis setup releases
+```
+
+which will prompt for your GitHub credentials. These are used to generate a personal access token
+for GitHub which Travis uses to authenticate when uploading the release. The `travis` client will
+encrypt the token, and update your `.travis.yml` with a deploy section which looks something like
+this;
+
+```yaml
+deploy:
+  provider: releases
+  api_key:
+    secure: # your encrypted token will be here
+  file: thesis.pdf
+  skip_cleanup: true
+```
+
+Since we only want to deploy on tagged commits, we can use the [conditional deployment][travis
+conditional deployment] options to conditionally deploy. This gives the following deploy section.
+
+```yaml
+deploy:
+  provider: releases
+  api_key:
+    secure: # your encrypted token will be here
+  file: thesis.pdf
+  skip_cleanup: true
+  on:
+    tags: true
+```
+
+
+## Conclusion
+
+I have made the entire `.travis.yml` file available for [download][.travis.yml] should you want to
+get started quickly. Or alternatively have a look at my repositories [usyd-beamer-theme] or
+[phd-thesis] which I have set up to use this workflow.
 
 - Conclusion
     - This should work for most latex Documents
@@ -247,7 +303,9 @@ by following [these instructions][travis install].
 [travis-ci getting started]: https://docs.travis-ci.com/user/getting-started/
 [travis-ci app]: https://github.com/marketplace/travis-ci/plan/MDIyOk1hcmtldHBsYWNlTGlzdGluZ1BsYW43MA==#pricing-and-setup
 [travis.rb]: https://github.com/travis-ci/travis.rb#installation
-[Semantic Versioning]:
-[thesis semver]:
+[travis language]: https://docs.travis-ci.com/user/languages/
+[travis build lifecycle]: https://docs.travis-ci.com/user/customizing-the-build/#The-Build-Lifecycle
+[Semantic Versioning]: https://semver.org/
+[thesis semver]: https://github.com/malramsay64/phd-thesis/blob/master/planning/versioning.md
 [git-check-ref-format]: https://git-scm.com/docs/git-check-ref-format
 [travis install]: https://github.com/travis-ci/travis.rb#installation
