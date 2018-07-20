@@ -10,21 +10,21 @@ One of the best parts of the current software development environment is the pro
 Continuous Integration (CI) services like [Travis-CI]. These CI services plug into GitHub or other
 code repositories to automatically run when new code is pushed to a repository. Typically CI is
 used for running automated testing every time new code is added so you can be reasonably confident
-that a change hasn't broken any functionality. The premise of CI is taking tedious tasks like
-running tests and automating them.
+a change hasn't broken any functionality. The premise of CI is the automation of tedious tasks like
+running tests.
 
-When writing a LaTeX document the most tedious task is running the compilation step. Particularly
-for large documents it can take a long time and when you only run the compilation irregularly
-there are invariably a whole collection of errors that have accumulated. Additionally the
-compilation of LaTeX documents is often highly machine dependent, only compiling properly on your
-machine for some unknown reason. The final issue with LaTeX documents is ensuring that all the
-files required for the compilation are included in the repository and not just hiding in a
-directory somewhere on your local filesystem.
+When writing a LaTeX document, I find compilation the most tedious task. Particularly for large
+documents, where it can take a long time. This means I run the compilation irregularly, invariably
+resulting in a whole collection of errors that have accumulated and I now have to fix. Additionally
+the compilation of LaTeX documents is often highly machine dependent, only working properly with a
+specific configuration some reason. My final issue with LaTeX documents is ensuring all the files
+required for compilation are included in the git repository, not just hiding in a directory
+somewhere on your local filesystem.
 
-As a way of getting around these issues in the write-up of my PhD thesis, I have developed a
-configuration for building LaTeX documents on Travis-CI. While I have found other methods for
-compiling LaTeX documents on Travis-CI, all the other methods I have found have compromises. I
-want a system that is;
+As a way of preventing these issues in the write-up of my PhD thesis, I have developed a
+configuration for building LaTeX documents on Travis-CI. While I have come across other methods for
+compiling LaTeX documents on Travis-CI, they all compromise on the workflow I would like. I want
+a system that is;
 
 - *fast*, with builds completing in a couple of minutes
 - *adaptable*, not having to manually specify every package I use
@@ -39,32 +39,42 @@ base TeXLive distribution is pre-installed on the Travis-CI image for A. However
 core extensions and so this approach is either *fast* in that the image just boots up, or
 *adaptable* by downloading `texlive-full` which takes a long time.
 
-The key issue I had with the TeXLive distribution was the lack of automatically downloading
-required packages. A LaTeX distribution that does download packages automatically is [MiKTeX],
-which has an installer that is only 200 MB compared to the ~3 GB of the complete TeXLive. MiKTeX
-also provides a [docker container][MiKTeX docker] which is a great method of having exactly the
-same environment for compiling locally and with a CI service. Unfortunately MiKTeX doesn't install
-the `biber` binary on Linux (or macOS)[^1]. While it is possible to create a new Docker which does
-include the `biber` binary, this deficiency highlights that extending a Docker container is
-non-trivial which makes this approach less favourable. That said, for other Docker-centric CI
-services this could be an excellent approach.
+The key issue with the TeXLive distribution is the lack of automatically downloading required
+packages. A LaTeX distribution with this feature is [MiKTeX], having an installer that is only 200
+MB compared to the ~3 GB of the complete TeXLive. MiKTeX also provides a
+[docker container][MiKTeX docker] which is a great method for having exactly the same environment
+compiling locally and through a CI service. Unfortunately MiKTeX doesn't install the `biber` binary
+on Linux (or macOS).[^1] While it is possible to create a new container which includes the `biber`
+binary, extending and maintaining a Docker container is non-trivial making this approach less
+favourable. That said, for other Docker-centric CI services this could be an excellent approach.
 
-Another much less well known and newer LaTeX distribution is [Tectonic] which is still considered
-beta software. However, it works for most scenarios and it has a lot of features that make it
-suitable for CI. I would recommend installation with [conda][Tectonic conda] although there are a
-range of [installation methods][Tectonic install] for both Linux and macOS (currently no Windows
-support). Like MiKTeX, Tectonic will automatically download all the packages required to compile a
-document, making the same configuration *adaptable* to many different configurations. Having conda
-as an installation method is also really useful, allowing a simple installation of many other
-tools (like [pandoc]) which are required to compile a document. The only requirement not satisfied
-by Tectonic is the automatic installation of `biber`. Although not supported natively, it is
-[possible to use biber with tectonic][Tectonic #53] as long as the binary for biber 2.5 is
-installed from [Sourceforge][biber 2.5].
+Another newer and less well known LaTeX distribution is [Tectonic]. Although still considered beta
+software, it works for most scenarios and has a lot of features that make it suitable for CI. I
+would recommend installation with [conda][Tectonic conda] although there are a range of
+[installation methods][Tectonic install] for both Linux and macOS (currently no Windows support).
+Like MiKTeX, Tectonic automatically downloads the packages required to compile a document, making
+the same configuration adaptable to many different documents. Having conda as an installation method
+is also particularly useful, allowing simple installation of many other tools (like [pandoc]) which
+might be required to compile a more complex document. The only requirement not satisfied by Tectonic
+is the automatic installation of `biber`. Although not supported natively, it is [possible to use
+biber with tectonic][Tectonic #53] as long as the appropriate binary for biber 2.5 is installed from
+[Sourceforge][biber 2.5].
 
 ### Compiling Documents with Tectonic
 
+Typically, compiling documents with `tectonic` requires a single command
+
+```bash
+tectonic document.tex
+```
+
+creating the file `document.pdf` and  automatically removing all intermediate files normally
+associated with compiling LaTeX documents. To use `biber` instead of `biblatex` for the bibliography
+the process is not quite so simple. In an attempt to make it easier I have created the Makefile
+below which can be used to create a document.
+
 ```Makefile
-# makefile
+# Makefile
 
 # directory to put build files
 build_dir := output
@@ -86,8 +96,15 @@ $(build_dir):
 	mkdir -p $@
 ```
 
-If you want to continue using your standard latex build tool locally which in my case is `latexmk`,
-you can check whether the `TRAVIS` environment variable is defined as in the example below.
+This build process runs `tectonic` once with the `--keep-intermediates` option to generate the
+intermediate files. I then check for the presence of a `.bcf` file, which is the file `biber` uses
+to to it's thing. Tectonic is then run afterwards, which runs the compilation step as many times as
+it needs to finalise the output. The final step is copying the output PDF from the build directory
+to the local working directory.
+
+If you want to continue using your standard LaTeX build tool locally (in my case this is `latexmk`),
+you can check whether the `TRAVIS` environment variable is defined enabling separate build
+processes as in the example compilation step below.
 
 ```makefile
 %.pdf: %.tex | $(build_dir)
@@ -99,21 +116,21 @@ ifdef TRAVIS
 	fi
 	tectonic -o $(build_dir) --keep-intermediates $<
 else
-	latexmk -outdir=$(build_dir) -pdf $<
+	latexmk -outdir=$(build_dir) -pdf -xelatex $<
 endif
 	cp $(build_dir)/$(notdir $@) .
 ```
 
-The `TRAVIS` environment variable is defined on all Travis instances and to test the code locally
-you can use the command
+The `TRAVIS` environment variable is defined on all Travis instances and can be set locally for
+testing using the command
 
 ```bash
 TRAVIS=true make
 ```
 
-which sets the variable for that command. Note that you will want to run a `make clean` between
-running with the different build systems since there will be some incompatibility with version
-numbering.
+This sets the variable `TRAVIS` just for the single command. Note that you will want to run a
+`make clean` between running with the different build systems as there will be incompatibility
+between versions.
 
 ## Configuring Travis CI
 
@@ -168,7 +185,7 @@ pre-installed on every build. This is less of a speed-up, although it can be hel
 The next step is specifying the steps to occur `before_install`. Travis has a number of steps in the
 [lifecycle of a build][travis build lifecycle] providing ways of breaking the build into logical
 steps. Each item in the list below is a bash command, which is run to update the environment of the
-test container. This downloads and installs both biber and conda, with conda then being used to
+test container. This downloads and installs both `biber` and conda, with conda then being used to
 install tectonic. Any other dependencies that are required can also be added to this step, say if
 you are converting Markdown to LaTeX with pandoc you could add `conda install pandoc`.
 
@@ -193,9 +210,9 @@ before_install:
   - conda install -y -c conda-forge tectonic
 ```
 
-The final step is the script, the code that is used to determine success or failure. Like the
-before_install section, this is a list of commands which are executed one after another. Unlike the
-before_install section all these commands are run, even when a command fails.
+The final step is the `script`, the code that is used to determine success or failure. Like the
+`before_install` section, this is a list of commands which are executed one after another. Unlike the
+`before_install` section all these commands are run, even when a command fails.
 
 ```yaml
 script:
@@ -203,7 +220,7 @@ script:
 ```
 
 The script section is also where you can add any other checks, like ensuring you haven't left in any
-TODOs, or swearing. You can run any code you like and if the exit code is zero it is deemed successful,
+TODOs, or spelling mistakes. You can run any code you like and if the exit code is zero it is deemed successful,
 while a non-zero exit code is a build failure. Note that a failing build will not go on to produce
 a release.
 
@@ -213,7 +230,7 @@ Having configured Travis to compile our document on every commit, it would be ni
 something with the resulting document. Every repository on GitHub has releases, which can be
 accessed by clicking on the releases link which is outlined in red on the image below.
 
-![The link to the releases page on github][static/latex_travis/releases.jpg]
+![The link to the releases page on GitHub](/static/code/latex_travis/releases.jpg)
 
 GitHub automatically creates a release for every tagged commit in the repository, creating a
 downloadable `.zip` and `.tar.gz` of the state of the repository at that commit. It is also possible
@@ -226,7 +243,7 @@ In writing of my PhD thesis it makes sense to tag releases using [Semantic Versi
 [a version of it][thesis semver]. Other documents are much less linear, it might make sense to tag a
 talk with the location it will be given, or the name of the conference. The requirements are
 basically use numbers, letters and any of `._-+/` --- see the [git-check-ref-format] documentation for more
-specific details)[^2].
+specific details).[^2]
 
 You can create a tag `my_tag` for a release by running the command
 
@@ -234,26 +251,29 @@ You can create a tag `my_tag` for a release by running the command
 git tag -a my_tag
 ```
 
-which will open an editor to write a message. A typical tag message is `<repository name> <tag>`
-although feel free to include whatever you like. Like commit messages, you can specify the message
-with the `-m` option. By default, git doesn't push tags to a remote, requiring the `--tags` option
+which will open an editor to write a message. A typical tag message is the repository name followed
+by the tag, although that isn't the only approach. Like commit messages, you can specify
+the message using the `-m` option. 
+
+By default, git doesn't push tags to a remote, requiring the
+`--tags` option
 
 ```bash
 git push --tags
 ```
 
-Before pushing tags, you are going to want to configure Travis to upload releases to
-GitHub. The best method for this is to use the Travis command line client, which can be installed
+Before pushing your newly created tag, you are going to want to configure Travis to upload releases
+to GitHub. The best method for this is to use the Travis command line client, which can be installed
 by following [these instructions][travis install]. Once installed you can run the command
 
 ```bash
 travis setup releases
 ```
 
-which will prompt for your GitHub credentials. These are used to generate a personal access token
-for GitHub which Travis uses to authenticate when uploading the release. The `travis` client will
-encrypt the token, and update your `.travis.yml` with a deploy section which looks something like
-this;
+which will prompt for your GitHub credentials and other information about the release. These are
+used to generate a personal access token for GitHub which Travis uses to authenticate when uploading
+the release. The `travis` client will encrypt the token, and update your `.travis.yml` with a deploy
+section which looks something like this;
 
 ```yaml
 deploy:
@@ -264,8 +284,9 @@ deploy:
   skip_cleanup: true
 ```
 
-Since we only want to deploy on tagged commits, we can use the [conditional deployment][travis
-conditional deployment] options to conditionally deploy. This gives the following deploy section.
+Since we only want to deploy on tagged commits, we can use the 
+[conditional deployment][travis conditional deployment] options to 
+conditionally deploy. This gives the following deploy section.
 
 ```yaml
 deploy:
@@ -283,19 +304,26 @@ deploy:
 
 I have made the entire `.travis.yml` file available for [download][.travis.yml] should you want to
 get started quickly. Or alternatively have a look at my repositories [usyd-beamer-theme] or
-[phd-thesis] which I have set up to use this workflow.
+[phd-thesis] which I have set up to use this workflow. This file along with the [Makefile] this
+should enable this process to work for the compilation of most documents.
 
-- Conclusion
-    - This should work for most latex Documents
-    - Tectonic compiles using xetex for unicode and font support
-    - To see this in action check out the two repositories I am using it with usyd-beamer-theme,
-    phd-thesis.
+While the process is complicated to set up, once completed it shouldn't require much effort to
+maintain. There is the rationale it might save you some time, however I think it is cool which is
+all justification I needed.
 
 [^1]: I should note that MiKTeX will install `biber` on a Windows system. So if you wanted to set
     up a Windows CI config I guess MiKTeX is a great approach.
 [^2]: There are more special characters supported, I just listed the most common ones. See the
-    [docs][git-check-ref-format].
+    [docs][git-check-ref-format] for more specific information.
+[^3]: You may notice that the minimal is not listed in the documentation. There is a
+    [GitHub issues](https://github.com/travis-ci/docs-travis-ci-com/issues/910#issuecomment-356915625) to
+    rectify this in which there is documentation.
 
+[Travis-CI]: https://travis.org
+[MiKTeX]: https://miktex.org/
+[MiKTeX docker]: https://miktex.org/howto/miktex-docker
+[pandoc]: https://pandoc.org/
+[Tectonic]: https://tectonic-typesetting.github.io
 [Tectonic conda]: https://tectonic-typesetting.github.io/en-US/install.html#the-anaconda-method
 [Tectonic install]: https://tectonic-typesetting.github.io/en-US/install.html
 [Tectonic #53]: https://github.com/tectonic-typesetting/tectonic/issues/53
@@ -309,3 +337,8 @@ get started quickly. Or alternatively have a look at my repositories [usyd-beame
 [thesis semver]: https://github.com/malramsay64/phd-thesis/blob/master/planning/versioning.md
 [git-check-ref-format]: https://git-scm.com/docs/git-check-ref-format
 [travis install]: https://github.com/travis-ci/travis.rb#installation
+[travis conditional deployment]: https://docs.travis-ci.com/user/deployment#Conditional-Releases-with-on%3A
+[phd-thesis]: https://github.com/malramsay64/phd-thesis
+[usyd-beamer-theme]: https://github.com/malramsay64/usyd-beamer-theme
+[.travis.yml]: /static/code/travis_latex/.travis.yml
+[Makefile]: /static/code/travis_latex/Makefile
