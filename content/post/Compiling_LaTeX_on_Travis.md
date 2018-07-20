@@ -1,8 +1,8 @@
 +++
 title = "Compiling LaTeX on Travis-CI"
 date = "2018-07-16"
-draft = true
-math = true
+draft = false
+math = false
 highlight = true
 +++
 
