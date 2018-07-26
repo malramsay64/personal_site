@@ -57,8 +57,12 @@ the same configuration adaptable to many different documents. Having conda as an
 is also particularly useful, allowing simple installation of many other tools (like [pandoc]) which
 might be required to compile a more complex document. The only requirement not satisfied by Tectonic
 is the automatic installation of `biber`. Although not supported natively, it is [possible to use
-biber with tectonic][Tectonic #53] as long as the appropriate binary for biber 2.5 is installed from
-[Sourceforge][biber 2.5].
+biber with tectonic][Tectonic #53] as long as the appropriate binary for biber 2.5 is installed,
+either from [Sourceforge][biber 2.5] or using conda
+
+```bash
+conda install -c malramsay biber==2.5
+```
 
 ### Compiling Documents with Tectonic
 
@@ -87,7 +91,7 @@ all: document.pdf
 	tectonic -o $(build_dir) --keep-intermediates -r0 $<
 	# Run biber if we find a .bcf file in the output
 	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then \
-		biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); \
+		biber --input-directory $(build_dir) $(notdir $(<:.tex=)); \
 	fi
 	tectonic -o $(build_dir) --keep-intermediates $<
 	cp $(build_dir)/$(notdir $@) .
@@ -112,7 +116,7 @@ ifdef TRAVIS
 	tectonic -o $(build_dir) --keep-intermediates -r0 $<
 	# Run biber if we find a .bcf file in the output
 	if [ -f $(build_dir)/$(notdir $(<:.tex=.bcf)) ]; then \
-		biber2.5 --input-directory $(build_dir) $(notdir $(<:.tex=)); \
+		biber --input-directory $(build_dir) $(notdir $(<:.tex=)); \
 	fi
 	tectonic -o $(build_dir) --keep-intermediates $<
 else
@@ -154,7 +158,7 @@ more detail in the rest of this document.
 6. Any further commits to the repository, whether to the master branch, other branches, tags, or
    pull-requests will trigger a build on Travis.
 
-### Creating a .travis.yml file {#travis.yml}
+### Creating a .travis.ml file {#travis.yml}
 
 The `.travis.yml` file is comprised of a number of sections which I have described individually
 below. The complete file is available for [download][.travis.yml]. To get Travis to start building
@@ -191,23 +195,15 @@ you are converting Markdown to LaTeX with pandoc you could add `conda install pa
 
 ```yaml
 before_install:
-  - mkdir -p $HOME/downloads
-  - mkdir -p $HOME/bin
-
-  # Download and install biber installing executable as biber2.5
-  - wget https://sourceforge.net/projects/biblatex-biber/files/biblatex-biber/2.5/binaries/Linux/biber-linux_x86_64.tar.gz -O $HOME/downloads/biber.tar.gz
-  - tar xvzf $HOME/downloads/biber.tar.gz -C $HOME/bin
-  - mv $HOME/bin/biber $HOME/bin/biber2.5
-  - export PATH="$HOME/bin:$PATH"
-
   # Download and install conda
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/downloads/miniconda.sh
-  - bash $HOME/downloads/miniconda.sh -b -u -p $HOME/miniconda
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
+  - bash $HOME/miniconda.sh -b -u -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
 
     # Install tectonic
-  - conda install -y -c conda-forge tectonic
+  - conda install -y -c conda-forge tectonic==0.1.8
+  - conda install -y -c malramsay biber==2.5
 ```
 
 The final step is the `script`, the code that is used to determine success or failure. Like the
@@ -310,6 +306,22 @@ should enable this process to work for the compilation of most documents.
 While the process is complicated to set up, once completed it shouldn't require much effort to
 maintain. There is the rationale it might save you some time, however I think it is cool which is
 all justification I needed.
+
+---
+
+**Update 2018-07-26:** Since initially writing this post I have created a conda package to
+distribute the biber binary. I have updated the post and included files to use this package since it
+significantly simplifies the installation. The steps from the original `travis.yml` file to manually
+install biber are below.
+
+```yaml
+  # Download and install biber installing executable as biber2.5
+  - wget https://sourceforge.net/projects/biblatex-biber/files/biblatex-biber/2.5/binaries/Linux/biber-linux_x86_64.tar.gz -O $HOME/downloads/biber.tar.gz
+  - tar xvzf $HOME/downloads/biber.tar.gz -C $HOME/bin
+  - mv $HOME/bin/biber $HOME/bin/biber2.5
+  - export PATH="$HOME/bin:$PATH"
+```
+
 
 [^1]: I should note that MiKTeX will install `biber` on a Windows system. So if you wanted to set
     up a Windows CI config I guess MiKTeX is a great approach.
