@@ -6,48 +6,74 @@ draft = true
 highlight = true
 +++
 
-One of the main complaints of Python is it's lack of speed. Jake van der Plass has an excellent
-[blogpost][why python is slow] explaining the technical details of what occurs in a function call.
-The basic premise of this post is that in being a dynamically typed language python code is written
-for a general case, regardless of the intention of the  developer.
+A common complaint about the Python programming language is that it is slow, often with reference to
+some benchmark comparing various tasks. There are a number of articles explaining why Python is
+slow, [Jake van der Plass] and [Anthony Shaw] are just two excellent examples. While I don't
+disagree with any of the points raised in these articles, I think they miss an important aspect of
+performance---specificity. Python is a general purpose language, used for nearly everything from
+embedded devices in uPython to distributed processing of petabytes of data.
 
-- There are a number of excellent articles explaining why python is slow
-    - links to them
-- While I don't disagree with them I think there is an essence of speed which is not captured.
-    - Python is 'slow' because it is a generalist language
+Speed comes through specificity for a task. Even when working with C or C++, which are generally
+regarded to be the gold standard for performance, there is still an argument to be made for
+increased performance through hand optimised assembly. Writing assembly, which is the stream of
+instructions that the CPU interprets to do it's work, can result in faster code than a compiler if
+you know what you doing. Only nearly no-one actually writes assembly because we want our
+applications to work on different processor architectures and to take advantage of the features of
+newer CPUs like out-of-order execution.[^1] Instead of writing the fastest possible code for a
+particular processor we provide hints to the compiler to help it optimise performance, for the best
+of both compatibility and performance.
 
-- Speed in computing comes from specificity.
-    - Look at C, which is generally regarded as the smallest overhead
-    - There was originally pushback -> why not use assembly
-    - even for BLAS operations we still use hand optimised assembly
-    - highly specific code
-- Only we don't want specificity
-    - Sorry your code doesn't work on the latest processors, you have to rewrite it
-    - We want to port our desktop app to mobile, you are going to have to take your x86 assembly and
-    rewrite it for ARM.
-- Why not FPGAs or ASICs
+The specificity of the hardware is also an important factor in performance. A CPU itself is a
+general purpose tool being adaptable to many different workflows. To really understand what *fast*
+is we can look to specialised hardware like GPUs, FPGAs, or ASICs. Graphics Processing Units (GPUs)
+are designed for performing the same operation on large quantities of data at the same time, whether
+that is working out the colour of each pixel on a display, or the values at each point of a large
+matrix. GPUs are phenomenally good at these tasks because they are designed at the hardware level
+for these workflows. An alternate method of hardware specific to a problem is a Field Programmable
+Gate Array (FPGA), where the programming refers to arranging the circuits on the chip to perform
+some processing. This allows for phenomenal processing capability, and is used in places like signal
+processing and Mars rovers. While the circuits FPGAs can be rearranged to solve different problems,
+or hardware updates, a Application-Specific Integrated Circuit (ASIC) is a piece of silicon for a
+single task. A common use of ASICs is video decoding, enabling you to watch YouTube on your phone.
+The progression of hardware from CPU to GPU to FPGA to ASIC represents a trade-off at each point of
+performance for specificity.
 
-- ML libraries have completely different implementations for CPU and GPU
+Specificity doesn't just refer to the low level details of processor architecture. Python is a
+dynamically typed language, allowing variables to change type during execution. A byproduct of
+dynamic typing is that types need to be evaluated for each operation. Should we want to add the
+values of two lists together like in the example below, each time the code reaches the line `result
+= i + j` it has to evaluate the type of both `i` and `j` to know how to perform the addition
+operation. With large numbers of values, the type evaluation takes far longer than the addition
+operation.
 
-- Specificity doesn't just come from the processor the code is running on.
-    - We also have type specificity
-    - in most programming languages you can define an addition operator for any types
-        - python allows for duck typing
-            - functions which are designed to take many different classes 
-                - this is all functions in python whether we want it or not
-            - In the cases where we do want specificity there are techniques to deal with it
-                - numpy finds the type information once for all elements in an array
-                - Cython accepts a single type in a function
-                    - have to rewrite for different types (yes there are templates)
-                - Numba compiles the code for specific type assuming there will be more
-        - it has to work out what the types are
-        - many 
+```python
+list1 = [1, 2, 3]
+list2 = [4, 5, 6]
+list_result = []
+for i, j in zip(list1, list2):
+    result = i + j
+    list_result.append(result)
+```
 
-- Above all we have the specificity of application
-    - A small application that can optimise one thing
-    - Large application that has to handle everything
-    - Python is not optimised for numerical computing, for the web, for command line scripts; it is
-    a general purpose programming language. Python is slower than Y for some specific scenario is
-    primarily that Y is more optimised for that task.
+A key concept in optimising numerical python code is limiting the number of type evaluations, with
+the canonical method being [NumPy]. Instead of having a list which can contain many different types,
+NumPy uses arrays which only contain a single type, which means the type only needs to be evaluated
+once for the entire array. Other optimisation techniques for numerical python, namely Cython and
+Rumba, operate in a very similar way; reducing the calculation to a limited range of types evaluated
+once.
 
-[why python is slow]: https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/
+Sitting above all the levels of flexibility mentioned above is the specificity of the application. A
+program designed specifically to solve a particular problem is able to make assumptions and
+optimisations specific to that problem. The general purpose tool has to optimise for everything,
+which means optimising for nothing. Python is a general purpose programming language; not optimised
+for numerical computing, for the web, for command line scripts, or any other use case. However, the
+amazing community has developed tools to optimise performance for almost every use case. Where speed
+is paramount, use a tool designed specifically for the desired application.
+
+
+[^1]: I guess you could also consider this a [bug...][meltdown]
+
+[Jake van der Plass]: https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/
+[Anthony Shaw]: https://hackernoon.com/why-is-python-so-slow-e5074b6fe55b
+[meltdown]: https://meltdownattack.com/
+
