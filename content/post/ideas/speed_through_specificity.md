@@ -1,7 +1,7 @@
 +++
 title = "Speed Through Specificity"
 date = "2018-08-07"
-draft = true
+draft = false
 
 highlight = true
 +++
@@ -34,8 +34,8 @@ much of the capability of a CPU. Having hardware specific to a task is a key fac
 and Field Programmable Gate Arrays ([FPGAs]) are one method of achieving this. Instead of providing
 a stream of instructions to be interpreted like a CPU or GPU, an FPGA is programmed by arranging the
 circuits to perform the desired processing, providing phenomenal processing capability. FPGAs are
-used in places like [signal processing][fpga signal processing] and the [Mars Rovers][fpga mars
-rovers] as they allow for reprogramming for task switching or hardware updates. In some applications
+used in places like [signal processing][fpga signal processing] and the [Mars Rovers][fpga mars rovers]
+as they allow for reprogramming for task switching or hardware updates. In some applications
 the programmability of a FPGA is unnecessary, so Application-Specific Integrated Circuits ([ASICs])
 are used instead. An ASIC is a piece of silicon for processing a single specific task, with a common
 use case being decoding video streams enabling you to watch hours of video in a single charge on
@@ -85,8 +85,7 @@ Where speed is important, use the specific tool for the job. In most cases this 
 standard library, instead it is usually just a `pip install` away.[^3]
 
 [^1]: I guess you could also consider this a [bug...][meltdown]
-[^2]: I would consider [Tensor Processing Units] (TPUs) in the same category as GPUs, with the main
-difference being the targeted precision of mathematical operations.
+[^2]: I would consider [Tensor Processing Units] (TPUs) in the same category as GPUs, with the main difference being the targeted precision of mathematical operations.
 [^3]: Or `conda install` for the tools requiring C/C++ libraries
 
 [Jake van der Plass]: https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/
@@ -101,6 +100,7 @@ difference being the targeted precision of mathematical operations.
 [openblas assembly]: https://github.com/xianyi/OpenBLAS/blob/develop/kernel/x86_64/gemm_kernel_8x4_sse3.S
 [fpga signal processing]: https://people.eecs.berkeley.edu/~bora/publications/Asilomar06b.pdf
 [fpga mars rovers]: https://www.eetimes.com/document.asp?doc_id=1262350
+[Numpy]: http://www.numpy.org/
 [Cython]: http://cython.org/
 [Numba]: https://numba.pydata.org/
 [PyCUDA]: https://documen.tician.de/pycuda/
