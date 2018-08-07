@@ -1,6 +1,8 @@
 +++
 title = "Experi: A tool for computational experiments"
 date = "2018-06-25"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = false
 math = false

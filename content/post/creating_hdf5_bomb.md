@@ -1,6 +1,8 @@
 +++
 title = "Creating an HDF5 Bomb"
 date = "2018-03-15"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = false
 math = false

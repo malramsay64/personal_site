@@ -1,6 +1,8 @@
 +++
 title = "A guide to setting up remote SSH"
 date = "2018-04-09"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = false
 math = true

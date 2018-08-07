@@ -1,6 +1,8 @@
 +++
 title = "Quaternions for Orientation in MD"
 date = "2017-09-13"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 math = true
 highlight = true

@@ -1,6 +1,8 @@
 +++
 title = "Distributing a Hoomd Plugin"
 date = "2018-06-03"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = false
 math = false

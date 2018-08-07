@@ -1,8 +1,10 @@
 +++
 title = "Speed Through Specificity"
 date = "2018-08-07"
-draft = false
+authors = ["Malcolm Ramsay"]
+tags = []
 
+draft = false
 highlight = true
 +++
 

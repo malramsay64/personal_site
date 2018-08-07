@@ -1,6 +1,8 @@
 +++
 title = "The Perils of Packaging in Python"
 date = "2018-01-07"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = false
 math = false

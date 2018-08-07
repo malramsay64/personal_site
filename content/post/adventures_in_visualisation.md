@@ -1,6 +1,8 @@
 +++
 title = "Adventures in the Python Visualisation Landscape"
 date = "2018-03-17"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = false
 math = true

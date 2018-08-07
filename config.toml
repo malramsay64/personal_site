@@ -1,7 +1,7 @@
 baseurl = "https://malramsay.com/"  # End your URL with a `/` trailing slash.
 title = "Malcolm Ramsay"
 copyright = "&copy; 2018 Malcolm Ramsay"
-theme = "academic"
+theme = "Academic"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
 
@@ -18,11 +18,23 @@ defaultContentLanguageInSubdir = false
 [blackfriday]
   hrefTargetBlank = true
 
+[outputs]
+  home = [ "HTML", "CSS", "RSS", "search" ]
+  section = [ "HTML", "RSS" ]
+
+[outputFormats.search]
+  baseName = "search"
+  isPlainText = true
+  mediaType = "application/json"
+  notAlternative = true
+
 [params]
+  color_theme="default"
+  font="default"
+
   name = "Malcolm Ramsay"
   role = "PhD Candidate"
-  organization = "University of Sydney"
-  organization_url = "https://sydney.edu.au"
+  organizations = [ { name = "University of Sydney", url = "https://sydney.edu.au" } ]
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
   avatar = ""  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
   email = "malramsay64@gmail.com"
@@ -38,10 +50,13 @@ defaultContentLanguageInSubdir = false
   # Date format (refer to Go's date format: http://flippinggodateformat.com )
   #   Examples: "Mon, Jan 2, 2006" or "2006-01-02"
   date_format = "2006-01-02"
+  time_format = "15:03"
 
   # Enable global LaTeX math rendering?
   #   If false, you can enable it locally on a per page basis.
   math = false
+
+  section_pager = true
 
   # Highlight.js options
   #   highlight
@@ -78,7 +93,7 @@ defaultContentLanguageInSubdir = false
   #   https://gcushen.github.io/hugo-academic-demo/post/writing-markdown-latex/#highlighting-options
   highlight = true
   highlight_languages = ["python", "bash", "yaml", "shell", "makefile"]
-  highlight_style = "github"
+  highlight_style = "github-gist"
   # highlight_version = "9.9.0"
 
   # Enable native social sharing buttons?
@@ -133,10 +148,10 @@ defaultContentLanguageInSubdir = false
     icon_pack = "fa"
     link = "//twitter.com/malramsay64"
 
-  #[[params.social]]
-    #icon = "google-scholar"
-    #icon_pack = "ai"
-    #link = "https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ"
+  [[params.social]]
+    icon = "google-scholar"
+    icon_pack = "ai"
+    link = "https://scholar.google.com.au/citations?user=lw2ZRfEAAAAJ"
 
   [[params.social]]
     icon = "github"
@@ -147,6 +162,13 @@ defaultContentLanguageInSubdir = false
     icon = "linkedin"
     icon_pack = "fa"
     link = "//www.linkedin.com/in/malramsay64/"
+
+  # Link to a PDF of your resume/CV from the About widget.
+  # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
+  # [[params.social]]
+    # icon = "cv"
+    # icon_pack = "ai"
+    # link = "files/cv.pdf"
 
 
 # Navigation Links
@@ -183,6 +205,13 @@ defaultContentLanguageInSubdir = false
   #name = "Contact"
   #url = "#contact"
   #weight = 6
+
+# Link to a PDF of your resume/CV from the menu.
+# To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
+# [[menu.main]]
+#    name = "CV"
+#    url = "files/cv.pdf"
+#    weight = 7
 
 # Taxonomies.
 [taxonomies]

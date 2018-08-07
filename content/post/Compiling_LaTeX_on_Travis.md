@@ -1,6 +1,10 @@
 +++
 title = "Compiling LaTeX on Travis-CI"
 date = "2018-07-16"
+authors = ["Malcolm Ramsay"]
+tags = []
+summary = "A guide to using continuous integration with LaTeX projects."
+
 draft = false
 math = false
 highlight = true

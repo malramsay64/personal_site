@@ -1,6 +1,8 @@
 +++
 title = "Building interfaces with click"
 date = "2017-08-03"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 math = true
 highlight = true
