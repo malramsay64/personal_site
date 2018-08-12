@@ -131,6 +131,21 @@ This is a significant problem with python packaging
 for which a solution has been accepted [PEP 518][PEP 518] and work is in [progress][pep 518 progress].
 In meantime, distributing a wheel is a solution to this problem.
 
+---
+
+**Update 2018-08-12**
+
+The release of pip 10.0 introduced support for a `pyproject.toml` file in which installation
+dependencies can be specified. A `pyproject.toml` for the above project would look like:
+
+```toml
+# pyproject.toml
+[build-system]
+requires= ['setuptools', 'wheel', 'numpy', 'Cython']
+```
+
+---
+
 ## Wheels
 
 I have included wheels as their own section
