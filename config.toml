@@ -1,7 +1,7 @@
 baseurl = "https://malramsay.com/"  # End your URL with a `/` trailing slash.
 title = "Malcolm Ramsay"
 copyright = "&copy; 2018 Malcolm Ramsay"
-theme = "Academic"
+theme = "academic"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
 
