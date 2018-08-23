@@ -17,6 +17,7 @@ provocative title, this is not a story of despair, rather one of rebuilding.
 As I write this, a week after finding the bug, I am basically now just waiting
 for simulations to finish to be back where I was beforehand.
 
+## The Problem
 
 I perform computer simulations of toy molecular systems, using something simple
 and understandable to gain insights into more complicated chemical systems. A
@@ -65,32 +66,31 @@ moving the entire molecule.
 
 In concert with a major release, the software I use for running my simulations,
 Hoomd, changed how it handled these systems from the first method to the
-second. At the time I didn't completely understand the changes that were made,
-assuming everything was the same, only I didn't actually check. Because of not
-checking that
+second. In getting my simulations to work with the updated version of hoomd, I
+had to manually enter a moment of inertia which I calculated for particle being
+a point mass of 1, yet I made no changes to the masses, which meant that the
+rigid body only had a mass of 1 instead of 3. At the time I didn't completely
+understand the changes that were made, assuming everything was the same, only I
+didn't actually check. By not actually checking or testing that the simulations
+were behaving as intended I spent the next two years of my PhD characterising
+the behaviour of the wrong control experiment. I think it is fairly likely that
+I will observe very similar results with the intended simulation, however I
+need the data to back that hypothesis up.
 
+## The solution
 
+Somewhat similarly to the problem that put me put me in this position in the first
+place, I can just redefine the molecules in my simulations now knowing the proper method
+of doing so and re-run all my simulations. Looking back on that initial change, I
+realise that the main issue was not that a part of simulation infrastructure changed, it
+was that I had no structured method of testing that the simulations are working; that
+is, they haven't changed.
 
+A common tool for the prevention of change, particularly in the software development
+space, is the use of automated testing. This is a suite of tests ensuring the
+functionality of all parts of the codebase, from checking the return value of a small
+function, to ensuring the application works as a whole.
 
-Introduction
-- Failure
-    - we don't talk about it enough
-- this is not a data issue, it is an issue of testing
-- Not a complete failure, since a week later I am basically where I was before
-    this started
-
-Problem definition
-- what went wrong
-    - incorrect mass of particles
-    - also less importantly incorrect center-of-mass
-- why that matters
-    - key result is the relationship between rotations and translations
-    - rotations assumed mass of 3, mass was actually 1
-    - this mistake built this result into the simulations
-        - it is not that the results themselves are completely wrong
-        - a lack of a control group
-            - you built this into your simulations, why would this apply to
-                other simulations
 
 Problem Solution
 - Re-define all the quantities in my simulations
