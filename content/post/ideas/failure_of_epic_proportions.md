@@ -89,44 +89,24 @@ is, they haven't changed.
 A common tool for the prevention of change, particularly in the software development
 space, is the use of automated testing. This is a suite of tests ensuring the
 functionality of all parts of the codebase, from checking the return value of a small
-function, to ensuring the application works as a whole.
+function, to ensuring the application works as a whole. In the two years since I had
+made the change to Hoomd v2.0.0 I had added a suite of test cases to ensure the correct
+functioning of the codebase. Each time I encountered a bug, I created a new set of test
+cases to ensure it didn't reappear. It is these test cases which are the real hero in
+this situation, giving me the confidence to break things, taking the upend-a-drawer
+approach to fixing up the code. In four days I had managed to completely overhaul my
+codebase, making changes to roughly 1/3 of it. Yet even with all these changes, the
+Application Programming Interface (API)---a fancy way of saying the parts of the program
+that someone actually interacts with---remained constant, thanks to the test suite.
+Since the API was the same, all the additional code I had to run my simulations still
+worked with the updated code. All that remained was to set them all going.
 
-
-Problem Solution
-- Re-define all the quantities in my simulations
-- Ensure everything still works
-
-Not really a problem
-- automated testing
-    - Ensure each part of the program is doing what I expect
-        - this means adding new tests for the masses of the particles
-    - each time a bug is encountered, add a test to check for it
-        - don't miss the same bug twice
-        - always checking for this issue
-        - it has been identified as a problem
-- The automated testing provides confidence to break things
-    - the upend a drawer onto the floor approach to cleaning up
-    - checks everything all the time
-- Code coverage is a method of checking all the tests are actually running
-    - If a test doesn't run it can't fail
-    - Is the test actually testing the right code path.
-
-In four days I had
-- completely overhauled my codebase
-    - 1700 insertions, 1100 deletions
-    - ~1/3 of the codebase
-- 373 to 454 tests
-
-This is only half the story
-- The testing ensued that the API remained the same
-- all the code I had been using to run the simulations still works
-- I have been working on a reproducible science workflow
-    - make it easy for others to replicate my result
-    - this was really useful for me now that I had to rerun all my simulations.
-
-Conclusion
-- although we may not like to admit it, we all make mistakes
-    - best practices are guidelines for making mistakes known an easy to fix
-- while reproducible science is often geared towards helping others
-    reproduce your results, sometimes it is really just for you.
-- there are lots of tools available for open source projects, make use of them
+Although we don't like to admit it, we all make mistakes. Mistakes, failures, and bugs
+are all part of doing something on the cutting edge. While they may be disruptive or
+inconvenient, they are only really damaging if they keep re-occurring. Making a mistake
+once is just part of the process, repeatedly making the same mistake is a problem, like
+the adage "fool me once shame on me, fool me twice shame on you". Best practices like
+automated testing are really just ways of making the mistakes that do occur obvious and
+simple to fix, as well as providing a way of preventing them from reoccurring. I am
+fairly confident that should this particular bug reappear I will notice, although that
+doesn't mean there isn't another just like it hiding away somewhere for me to find.
