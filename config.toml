@@ -2,7 +2,7 @@ baseurl = "https://malramsay.com/"  # End your URL with a `/` trailing slash.
 title = "Malcolm Ramsay"
 copyright = "&copy; 2018 Malcolm Ramsay"
 theme = "academic"
-enableEmoji = true
+enableEmoji = false
 footnotereturnlinkcontents = "<sup>^</sup>"
 
 # Enable comments by entering your Disqus shortname
