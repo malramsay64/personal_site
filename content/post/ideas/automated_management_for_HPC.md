@@ -1,6 +1,8 @@
 +++
 title = "Automated Management of HPC Environments"
 date = "2018-03-21"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = true
 math = true
@@ -41,7 +43,7 @@ Managing these versions can be difficult
         - Problem is root access is assumed
             - installation of dependencies using package managers
             - default installation as system user
-            - few packages for the management of virtualenvs 
+            - few packages for the management of virtualenvs
                 - end up using shell commands for intended result
             - complicated setup of directory structure and tasks
         - when you end up having to modify everything and either run shell commands or write your

@@ -1,6 +1,8 @@
 +++
 title = "The Importance of Open Science"
 date = "2018-08-23"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = true
 math = true
@@ -32,7 +34,7 @@ How do I get involved in open science
 - Open lab notebooks
     - LabArchives
     - OSF
-    - these are more suited to more physical experiments 
+    - these are more suited to more physical experiments
 - Data Analysis
     - cookiecutter data science
     - Jupyter Notebooks
@@ -75,8 +77,7 @@ Conclusion
 
  “I had and was very willing to share the code,” he says. What he didn’t have, he says, was the time or personnel to prepare the code in a form that could be useful to an outsider. “When Debenedetti’s group was making their code available,” Limmer explains, “he brought people in to clean up the code and document and run tests on it. He had resources available to him to be able to do that.” At Berkeley, “it was just me trying to get that done myself.” Limmer
 
- After several email exchanges with Limmer and Chandler and a direct plea to Nature editors, the Princeton group finally received a working version of the Berkeley code. 
+ After several email exchanges with Limmer and Chandler and a direct plea to Nature editors, the Princeton group finally received a working version of the Berkeley code.
 
 
 [war over water]: https://physicstoday.scitation.org/do/10.1063/PT.6.1.20180822a/full/
-

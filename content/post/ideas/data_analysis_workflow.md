@@ -1,6 +1,8 @@
 +++
 title = "A data analysis workflow for computational sciences"
 date = "2018-03-21"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = true
 math = true
@@ -14,5 +16,3 @@ and the analysed data.
 Here I document my solution to a workflow given the constraints I work under.
 This is by no means the ideal workflow,
 I am always finding new ways of making improvements.
-
-

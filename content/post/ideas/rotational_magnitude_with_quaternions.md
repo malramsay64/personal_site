@@ -1,6 +1,8 @@
 +++
 title = "Rotational Magnitude with Quaternions"
 date = "2018-04-10"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = true
 math = true

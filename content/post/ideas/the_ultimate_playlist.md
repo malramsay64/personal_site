@@ -1,8 +1,10 @@
 +++
 title = "The Ultimate Marching Playlist"
 date = "2017-11-25"
-draft = true
+authors = ["Malcolm Ramsay"]
+tags = []
 
+draft = true
 math = true
 highlight = true
 +++

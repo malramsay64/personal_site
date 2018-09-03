@@ -1,8 +1,10 @@
 +++
 title = "Machine Learning in Molecular Dynamics"
 date = "2017-12-17"
-draft = true
+authors = ["Malcolm Ramsay"]
+tags = []
 
+draft = true
 highlight = true
 +++
 

@@ -99,7 +99,16 @@ codebase, making changes to roughly 1/3 of it. Yet even with all these changes, 
 Application Programming Interface (API)---a fancy way of saying the parts of the program
 that someone actually interacts with---remained constant, thanks to the test suite.
 Since the API was the same, all the additional code I had to run my simulations still
-worked with the updated code. All that remained was to set them all going.
+worked with the updated code. All that remained was to set them running.
+
+I have been working on a project [Experi],
+designed to make simulations like those I am running simple and repeatable.
+This was the other part of making the recovery from my failure so successful.
+I could easily read over the experiment I had designed,
+checking the appropriateness of the variables
+and then re-running everything in a single command.
+
+## Conclusion
 
 Although we don't like to admit it, we all make mistakes. Mistakes, failures, and bugs
 are all part of doing something on the cutting edge. While they may be disruptive or

@@ -1,8 +1,10 @@
 +++
 title = "Click: The right tool for the job"
 date = "2017-08-04"
-draft = true
+authors = ["Malcolm Ramsay"]
+tags = []
 
+draft = true
 math = true
 highlight = true
 +++
@@ -47,4 +49,3 @@ The hardest part of solving this problem is finding the appropriate tools for th
                   help='Description to put into filename')
     @click.option('--long-desc', prompt='Long description for caption',
                   help='Description for caption')
-

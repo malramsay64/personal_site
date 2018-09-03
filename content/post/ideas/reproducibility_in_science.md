@@ -1,6 +1,8 @@
 +++
 title = "Reproducability in Science"
 date = "2018-01-03"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = true
 math = true

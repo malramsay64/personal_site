@@ -1,6 +1,8 @@
 +++
 title = "What is Published Research"
 date = "2018-05-03"
+authors = ["Malcolm Ramsay"]
+tags = []
 
 draft = true
 math = true
