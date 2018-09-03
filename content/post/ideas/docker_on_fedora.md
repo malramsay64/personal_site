@@ -4,7 +4,7 @@ date = "2018-09-02"
 authors = ["Malcolm Ramsay"]
 tags = []
 
-draft = true
+draft = false
 math = true
 highlight = true
 +++
