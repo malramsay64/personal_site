@@ -104,7 +104,7 @@ which included a significant overhaul of the software.
 This overhaul included changing how it handled the molecular calculations
 from the first method to the second method,
 something which I didn't realise at the time.
-In getting my simulations to work with the new version of hoomd,
+In getting my simulations to work with the new version of Hoomd,
 I manually entered a moment of inertia,
 calculated from each particle having a point mass of 1,
 however the total mass of the molecule
@@ -115,41 +115,112 @@ characterising the behaviour of the wrong control experiment.
 
 ## Finding the Bug
 
-- types of tests
-- documentation
-- change management
-    - same results from same simulations
-- Comparison with existing results
+I found the bug as part of trying to add additional functionality.
+I was trying to randomly initialise velocities of particles in a configuration
+such that they matched the desired temperature.
+
+
+The reason I found the bug was a result few the
+Bug result of setting thermodynamic quantities
+    - temperature is a distribution of velocities
+    - energy is evenly distributed between translational and rotational motion
+
 
 ## Lessons Learnt
 
-### Identifying Failure
+The lessons I have learnt from this experience
+can be grouped into two groups,
+the identification of bugs,
+and the management of computational projects.
 
-- explicit in testing
-    - What to test
-    - how to test
-    - testing relevant things
-    - energy conservation
-        - not relevant to the code I am writing
-        - What is conserved?, within 10% within 1%
+### Identifying Bugs
 
-- testing stochastic behaviour is hard
-    - don't have to check perfectly correct, just not wrong
-    - coin toss close enough to 50%
-    - easy to pick up wrong by factor of 2
+Even before the identification of this bug
+I had developed a test suite for my code,
+ensuring I was configuring the simulations in Hoomd
+with the appropriate values.
+What I wasn't checking,
+was that these values produced the simulations I thought I was running.
+Typically the method of doing this
+is to take some previous results and replicating them,
+although since no-one else has run simulations
+on the particular system I am using it is a little difficult to do this.
 
-### Rebuilding
+I had been told by my supervisor on many occasions
+to confirm that the simulations were physically accurate,
+usually with reference to conservation of energy.
+This was really easy to ignore because that out of scope
+for the code I was writing,
+however, the idea of checking the simulation
+is consistent with the laws of physics
+was definitely worth considering earlier.
 
-- Reproducible science
-- cookiecutter-compchem
-- project structure
-- experi
-- regression testing, failures don't reoccur
+A simple check of physicality is though the equi partition theorem,
+which describes that each of the degrees of freedom,
+whether translational or rotational,
+have the same energy.
+The relationships below link the mass $m$
+and moment-of-inertia $I$
+to the temperature $T$ providing a route to testing the simulations,
+where the angled brackets $\langle \rangle$ denote an averaged quantity.
 
-- software development
-    - not just the code
-    - also the testing
-    - deployment
+$$
+\begin{aligned}
+    \langle \frac{1}{2} m v^2 \rangle &= k_B T\\
+    \langle \frac{1}{2} I \omega^2 \rangle &= \frac{1}{2}k_B T
+\end{aligned}
+$$
+
+What might not be so obvious here is that the temperature $T$
+in the above equations is not a static quantity,
+instead fluctuating about the desired temperature,
+a construct of the type of simulations I am performing.
+This makes the task of testing the temperature is correct
+significantly more difficult,
+since it is not a set value,
+lying in a distribution.
+While creating automated testing for whether a value that varies can be difficult,
+re-framing the test as *not-wrong* is just as valid.
+With this bug I created I was off by a factor of 3,
+many times larger than any reasonable variation.
+I didn't need to test that the temperature was exactly right,
+I just needed to ensure it is not obviously wrong.
+
+{{% note %}}
+Testing is not about ensuring exact correctness,
+it is also ensuring the absence of obvious errors.
+{{% /note %}}
+
+### Rebuilding the Dataset
+
+While the main storyline of this article has been
+losing the years of my PhD research,
+a major part of the learning experience
+has been the rebuilding of all the data I had collected.
+
+{{% note %}}
+Reproducibility in science is not just for others to reproduce your work
+it is also so you can reproduce it when you stuff up.
+{{% /note %}}
+
+I have been constantly working to improve my workflow,
+as I learn more about what works and what doesn't
+ending up with a structure based heavily on
+the [cookiecutter-cms] and [cookiecutter-data-science] project templates.
+All the new work was structured into these project templates
+which are well organised, with an emphasis on being able to replicate analyses.
+What I really noticed in rebuilding my dataset
+was that replicating these newer elements was simple and straightforward,
+while the older projects just working out what I had done was a challenge,
+let alone what needed to be recreated.
+
+Further to having a well organised data analysis,
+having all the computational experiments,
+including the permutations of every variable
+and the scripts required to run the simulation was invaluable.
+The experiments where this was up to date
+were the simplest to deal with,
+I just needed to run them again.
 
 ## Conclusion
 
@@ -164,3 +235,7 @@ are ways of making the mistakes that do occur obvious and simple to fix,
 as well as providing a way of preventing them from reoccurring.
 I am now fairly confident that should this particular bug reappear I will notice,
 although that doesn't mean there isn't another hiding away for me to find.
+
+[Hoomd]: https://hoomd-blue.readthedocs.io/en/stable/index.html
+[cookiecutter-cms]: https://github.com/MolSSI/cookiecutter-cms
+[cookiecutter-data-science]: https://drivendata.github.io/cookiecutter-data-science/
