@@ -54,7 +54,7 @@ The molecule I am studying is comprised of three circles,
 one large and two small, arranged like a Mickey Mouse head.
 
 ![The molecule I am studying, three circles arrraged like a Mickey Mouse
-head.][image.png]
+head.](/static/img/molecules/trimer.png)
 
 To make calculations with these toy systems easier,
 I use a system of units in which most quantities have a unitless value of 1.
@@ -155,6 +155,9 @@ however, the idea of checking the simulation
 is consistent with the laws of physics
 was definitely worth considering earlier.
 
+> Testing is not about ensuring exact correctness,
+> it is also ensuring the absence of obvious errors.
+
 A simple check of physicality is though the equi partition theorem,
 which describes that each of the degrees of freedom,
 whether translational or rotational,
@@ -186,10 +189,6 @@ many times larger than any reasonable variation.
 I didn't need to test that the temperature was exactly right,
 I just needed to ensure it is not obviously wrong.
 
-{{% note %}}
-Testing is not about ensuring exact correctness,
-it is also ensuring the absence of obvious errors.
-{{% /note %}}
 
 ### Rebuilding the Dataset
 
@@ -198,10 +197,8 @@ losing the years of my PhD research,
 a major part of the learning experience
 has been the rebuilding of all the data I had collected.
 
-{{% note %}}
-Reproducibility in science is not just for others to reproduce your work
-it is also so you can reproduce it when you stuff up.
-{{% /note %}}
+> Reproducibility in science is not just for others to reproduce your work
+> it is also so you can reproduce it when you stuff up.
 
 I have been constantly working to improve my workflow,
 as I learn more about what works and what doesn't
