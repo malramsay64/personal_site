@@ -1,6 +1,6 @@
 +++
-title = "Failure of Epic Proportions: How I 'lost' two years of data."
-date = "2018-08-22"
+title = "Failing Hard: How I 'lost' two years of data."
+date = "2018-11-22"
 authors = ["Malcolm Ramsay"]
 tags = []
 
