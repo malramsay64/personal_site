@@ -148,7 +148,7 @@ enableGitInfo = true
 
   [[params.social]]
     icon = "twitter"
-    icon_pack = "fa"
+    icon_pack = "fab"
     link = "//twitter.com/malramsay64"
 
   [[params.social]]
@@ -158,12 +158,12 @@ enableGitInfo = true
 
   [[params.social]]
     icon = "github"
-    icon_pack = "fa"
+    icon_pack = "fab"
     link = "//github.com/malramsay64"
 
   [[params.social]]
-    icon = "linkedin"
-    icon_pack = "fa"
+    icon = "linkedin-in"
+    icon_pack = "fab"
     link = "//www.linkedin.com/in/malramsay64/"
 
   # Link to a PDF of your resume/CV from the About widget.
