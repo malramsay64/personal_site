@@ -1,40 +1,14 @@
 +++
-# About/Biography widget.
-widget = "about"
-date = "2017-08-01"
-draft = false
+# About widget.
+widget = "about"  # See https://sourcethemes.com/academic/docs/page-builder/
+headless = true  # This file represents a page section.
+active = true  # Activate this widget? true/false
+weight = 20  # Order that this section will appear in.
 
-# Order that this section will appear in.
-weight = 1
+title = "Biography"
 
-# List your academic interests.
-[interests]
-  interests = [
-    "Computational Chemistry",
-    "Open & Reproducible Science",
-    "Python",
-    "Data Science",
-    "Machine Learning",
-  ]
-
-# List your qualifications (such as academic degrees).
-[[education.courses]]
-  course = "PhD Candidate in Chemistry"
-  institution = "University of Sydney"
-  year = 2019
-
-[[education.courses]]
-  course = "Bachelor of Science, Honours"
-  institution = "University of Sydney"
-  year = 2014
-
+# Choose the user profile to display
+# This should be the username of a profile in your `content/authors/` folder.
+# See https://sourcethemes.com/academic/docs/get-started/#introduce-yourself
+author = "malcolm"
 +++
-
-# Biography
-
-I am currently a PhD candidate in the School of Chemistry at the University of Sydney, having
-returned after spending the first six months of 2017 Co-Founding the startup FluoSat, and taking it
-through Telstra's Muru-D accelerator program. In my PhD, I am studying the crystallisation and glass
-formation of molecular liquids, using computer simulations coupled with data analysis techniques to
-understand the complex behaviours of these systems. My general research interests lie in the areas
-of statistical mechanics, machine learning, and data visualisation.

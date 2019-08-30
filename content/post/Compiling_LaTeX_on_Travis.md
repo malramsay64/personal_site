@@ -1,7 +1,7 @@
 +++
 title = "Compiling LaTeX on Travis-CI"
 date = "2018-07-16"
-authors = ["Malcolm Ramsay"]
+authors = ["malcolm"]
 tags = []
 summary = "A guide to using continuous integration with LaTeX projects."
 
@@ -253,7 +253,7 @@ git tag -a my_tag
 
 which will open an editor to write a message. A typical tag message is the repository name followed
 by the tag, although that isn't the only approach. Like commit messages, you can specify
-the message using the `-m` option. 
+the message using the `-m` option.
 
 By default, git doesn't push tags to a remote, requiring the
 `--tags` option
@@ -284,8 +284,8 @@ deploy:
   skip_cleanup: true
 ```
 
-Since we only want to deploy on tagged commits, we can use the 
-[conditional deployment][travis conditional deployment] options to 
+Since we only want to deploy on tagged commits, we can use the
+[conditional deployment][travis conditional deployment] options to
 conditionally deploy. This gives the following deploy section.
 
 ```yaml
