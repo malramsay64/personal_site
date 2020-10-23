@@ -1,6 +1,6 @@
 +++
 title = "Shear melting at the crystal-liquid interface: Erosion and the asymmetric suppression of interface fluctuations"
-date = "2016-02-16"
+date = 2016-02-16
 draft = false
 
 # Authors. Comma separated list, e.g. `["Bob Smith", "David Jones"]`.

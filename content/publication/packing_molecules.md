@@ -1,6 +1,6 @@
 +++
 title = "Packing concave molecules in crystals and amorphous solids: On the connection between shape and local structure"
-date = "2015-04-21"
+date = 2015-04-21
 draft = false
 
 # Authors. Comma separated list, e.g. `["Bob Smith", "David Jones"]`.

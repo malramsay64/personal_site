@@ -1,6 +1,6 @@
 +++
 title = "Defect-mediated relaxation in the random tiling phase of a binary mixture: Birth, death and mobility of an atomic zipper"
-date = "2014-02-14"
+date = 2014-02-14
 draft = false
 
 # Authors. Comma separated list, e.g. `["Bob Smith", "David Jones"]`.
