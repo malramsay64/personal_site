@@ -5,6 +5,8 @@ date = 2020-10-19
 draft = true
 math = true
 highlight = true
+
+tags = ["python"]
 +++
 
 The numerical computing capabilities of the Python ecosystem
@@ -60,9 +62,9 @@ We can no longer go from testing ideas
 in 
 
 
-[Dask]: post/Dask
-[Numpy]: post/Numpy
-[Pandas]: post/Pandas
-[Rapids]: post/Rapids
-[Scipy]: post/Scipy
-[Desk]: post/Desk
+[Dask]: 
+[Numpy]: 
+[Pandas]: 
+[Rapids]: 
+[Scipy]: 
+[Desk]: 
