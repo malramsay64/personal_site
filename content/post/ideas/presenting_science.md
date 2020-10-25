@@ -1,10 +1,11 @@
 +++
 title = "presenting_science.md"
-date = "2018-11-14"
+date = 2018-11-14
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["research"]
 +++
 
 - reproducibility

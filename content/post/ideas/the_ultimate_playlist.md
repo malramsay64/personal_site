@@ -1,12 +1,11 @@
 +++
 title = "The Ultimate Marching Playlist"
-date = "2017-11-25"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2017-11-25
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["python", "programming"]
 +++
 
 Marching has long been associated with the movement of

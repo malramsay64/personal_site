@@ -1,12 +1,11 @@
 +++
 title = "The Perils of Packaging in Python"
-date = "2018-01-07"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-01-07
 
 draft = false
-math = false
-highlight = true
+
+[taxonomies]
+tags = ["python", "packaging"]
 +++
 
 There are many guides to packaging a python application,

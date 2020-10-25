@@ -1,12 +1,12 @@
 +++
 title = "Creating an HDF5 Bomb"
-date = "2018-03-15"
+date = 2018-03-15
 authors = ["Malcolm Ramsay"]
-tags = []
 
 draft = false
-math = false
-highlight = true
+
+[taxonomies]
+tags = ["data", "python"]
 +++
 
 You may have heard of a [zip bomb][zip bomb] or other decompression 'bombs',

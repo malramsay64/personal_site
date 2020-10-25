@@ -1,11 +1,11 @@
 +++
 title = "Wrapping with Cython"
-date = "2017-12-17"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2017-12-17
 
 draft = true
-highlight = true
+
+[taxonomies]
+tags = ["python", "optimisation"]
 +++
 
  <!--This really needs a good introduction to why this

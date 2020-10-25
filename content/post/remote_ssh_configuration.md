@@ -1,12 +1,11 @@
 +++
 title = "A guide to setting up remote SSH"
-date = "2018-04-09"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-04-09
 
 draft = false
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["devops"]
 +++
 
 

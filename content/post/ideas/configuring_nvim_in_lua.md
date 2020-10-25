@@ -3,8 +3,9 @@ title = "Configuring Neovim in Lua"
 date = 2020-09-25
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["programming", "vim"]
 +++
 
 - Migrating configuration

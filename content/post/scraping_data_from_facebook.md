@@ -1,12 +1,11 @@
 +++
 title = "Scraping Data from Facebook"
-date = "2018-05-09"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-05-09
 
 draft = false
-math = false
-highlight = true
+
+[taxonomies]
+tags = ["scraping", "python"]
 +++
 
 Competition is a strange thing

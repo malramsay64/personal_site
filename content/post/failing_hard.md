@@ -1,12 +1,11 @@
 +++
 title = "Failing Hard: How I 'lost' two years of data."
-date = "2018-11-22"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-11-22
 
 draft = false
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["phd", "research"]
 +++
 
 Failure is one of those topics

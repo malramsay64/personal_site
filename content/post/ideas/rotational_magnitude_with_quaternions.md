@@ -1,12 +1,11 @@
 +++
 title = "Rotational Magnitude with Quaternions"
-date = "2018-04-10"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-04-10
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["programming", "math"]
 +++
 
 Magnitude of angular rotation in each cardinal direction

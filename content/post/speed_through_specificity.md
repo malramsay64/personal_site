@@ -1,11 +1,11 @@
 +++
 title = "Speed Through Specificity"
-date = "2018-08-07"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-08-07
 
 draft = false
-highlight = true
+
+[taxonomies]
+tags = ["optimisation", "python"]
 +++
 
 A common criticism about the Python programming language is that it is slow, often with reference to

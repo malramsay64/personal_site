@@ -1,12 +1,11 @@
 +++
 title = "Adventures in the Python Visualisation Landscape"
-date = "2018-03-17"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-03-17
 
 draft = false
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["visualisation", "python"]
 +++
 
 Calling the current python visualisation landscape fragmented would probably be an understatement,

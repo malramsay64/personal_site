@@ -1,12 +1,11 @@
 +++
 title = "Writing Presentations in Markdown"
-date = "2019-08-28"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2019-08-28
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["markdown", "writing"]
 +++
 
 When developing a presentation,

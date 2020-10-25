@@ -1,12 +1,11 @@
 +++
 title = "Automated Management of HPC Environments"
-date = "2018-03-21"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-03-21
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["devops"]
 +++
 
 Research Software, particularly that you are writing for a specific purpose changes rapidly.

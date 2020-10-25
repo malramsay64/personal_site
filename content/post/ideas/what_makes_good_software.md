@@ -1,12 +1,11 @@
 +++
 title = "What makes good Software"
-date = "2018-09-14"
-author = ["Malcolm Ramsay"]
-tags = []
+date = 2018-09-14
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["programming"]
 +++
 
 I am in the middle of my second review for

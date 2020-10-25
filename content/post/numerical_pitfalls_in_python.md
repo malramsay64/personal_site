@@ -3,9 +3,8 @@ title= "Numerical Pitfalls in Python"
 date = 2020-10-19
 
 draft = true
-math = true
-highlight = true
 
+[taxonomies]
 tags = ["python"]
 +++
 

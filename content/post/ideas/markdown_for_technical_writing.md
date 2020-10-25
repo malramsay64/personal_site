@@ -3,8 +3,9 @@ title = "Markdown for Technical Writing"
 date = 2020-03-30
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["writing"]
 +++
 
 This will likely be a multi part series

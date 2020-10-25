@@ -1,10 +1,11 @@
 +++
 title = "designing_interface_jupyter"
-date = "2018-11-14"
+date = 2018-11-14
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["data science"]
 +++
 
 Jupyter is an awesome human computer interface

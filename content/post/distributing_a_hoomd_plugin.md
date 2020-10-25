@@ -1,15 +1,14 @@
 +++
 title = "Distributing a Hoomd Plugin"
-date = "2018-06-03"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-06-03
 
 draft = false
-math = false
-highlight = true
+
+[taxonomies]
+tags = ["molecular-dynamics", "python"]
 +++
 
-A piece of software I have been using in my reasearch is [Hoomd][],
+A piece of software I have been using in my research is [Hoomd][],
 a 'relatively' new package for running Molecular Dynamics (MD) simulations.
 These MD simulations have the basic premise of
 throwing hundreds of balls into a box and shaking it

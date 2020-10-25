@@ -1,11 +1,11 @@
 +++
 title = "Building interfaces with click"
-date = "2017-08-03"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2017-08-03
 
-math = true
-highlight = true
+draft = false
+
+[taxonomies]
+tags = ["python"]
 +++
 
 Running computer simulations is great.

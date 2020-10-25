@@ -1,13 +1,11 @@
 +++
 title = "Compiling LaTeX on Travis-CI"
-date = "2018-07-16"
-authors = ["malcolm"]
-tags = []
-summary = "A guide to using continuous integration with LaTeX projects."
+date = 2018-07-16
 
 draft = false
-math = false
-highlight = true
+
+[taxonomies]
+tags = ["latex", "ci"]
 +++
 
 One of the best parts of the current software development environment is the proliferation of

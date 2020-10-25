@@ -1,12 +1,11 @@
 +++
 title = "Reproducability in Science"
-date = "2018-01-03"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-01-03
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["research", "programming"]
 +++
 
 One of the key reasons we use version numbers,

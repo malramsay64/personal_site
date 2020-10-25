@@ -1,12 +1,11 @@
 +++
 title = "Experi: A tool for computational experiments"
-date = "2018-06-25"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-06-25
 
 draft = false
-math = false
-highlight = true
+
+[taxonomies]
+tags = ["python", "research"]
 +++
 
 ## Abstract

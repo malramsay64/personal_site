@@ -1,12 +1,11 @@
 +++
 title = "What is Published Research"
-date = "2018-05-03"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-05-03
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["writing"]
 +++
 
 In the Sciences,

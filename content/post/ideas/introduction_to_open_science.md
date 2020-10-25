@@ -1,12 +1,11 @@
 +++
 title = "An Introduction to Open Science"
-date = "2018-07-31"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-07-31
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["research"]
 +++
 
 - What is Open

@@ -1,12 +1,11 @@
 +++
 title = "Click: The right tool for the job"
-date = "2017-08-04"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2017-08-04
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["cli", "python"]
 +++
 
 There are times when you have a problem that needs solving,

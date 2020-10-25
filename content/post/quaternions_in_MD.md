@@ -1,11 +1,11 @@
 +++
 title = "Quaternions for Orientation in MD"
-date = "2017-09-13"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2017-09-13
 
 math = true
-highlight = true
+
+[taxonomies]
+tags = ["python", "maths"]
 +++
 
 In the understanding of the dynamics of a molecule in a Molecular Dynamics (MD) Simulation

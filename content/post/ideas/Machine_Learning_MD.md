@@ -1,11 +1,11 @@
 +++
 title = "Machine Learning in Molecular Dynamics"
-date = "2017-12-17"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2017-12-17
 
 draft = true
-highlight = true
+
+[taxonomies]
+tags = ["python", "ML"]
 +++
 
 The Problem

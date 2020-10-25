@@ -1,12 +1,11 @@
 +++
 title = "A Complete Guide to Docker on Fedora"
-date = "2018-09-02"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-09-02
 
 draft = false
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["containers"]
 +++
 
 While there are numerous guides to installing Docker on Fedora,

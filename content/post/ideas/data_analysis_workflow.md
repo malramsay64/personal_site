@@ -1,12 +1,11 @@
 +++
 title = "A data analysis workflow for computational sciences"
-date = "2018-03-21"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-03-21
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["data science", "research"]
 +++
 
 When working within the framework of the computational sciences

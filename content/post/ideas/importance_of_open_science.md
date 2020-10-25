@@ -1,12 +1,11 @@
 +++
 title = "The Importance of Open Science"
-date = "2018-08-23"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-08-23
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["research"]
 +++
 
 There was this article in physics today

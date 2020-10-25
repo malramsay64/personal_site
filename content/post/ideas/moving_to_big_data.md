@@ -1,12 +1,11 @@
 +++
 title = "Making the Move to Big Data"
-date = "2018-02-26"
-authors = ["Malcolm Ramsay"]
-tags = []
+date = 2018-02-26
 
 draft = true
-math = true
-highlight = true
+
+[taxonomies]
+tags = ["data science"]
 +++
 
 It is no real secret that pandas is [not optimised for memory management][wes_pandas_memory],
