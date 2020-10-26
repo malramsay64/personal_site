@@ -76,8 +76,10 @@ sudo systemctl start docker
 
 ## Setting Permissions
 
-> This section has the potential to break things which are difficult to fix.
-> Please be really careful, unlike me.
+{% warning() %}
+This section has the potential to break things which are difficult to fix.
+Please be really careful, unlike me.
+{% end %}
 
 This follows the optional [post installation][docker post-install] steps in the Docker documentation.
 
@@ -110,7 +112,7 @@ The final step is adding yourself and/or any other users to the Docker group.
 This is done with the command
 
 
-{% alert() %}
+{% warning() %}
 Running the below command without append
 will remove you from the `wheel` group
 meaning you will no longer be able to run commands with `sudo`.
