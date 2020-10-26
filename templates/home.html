@@ -1,0 +1,7 @@
+{% extends "mals-theme/templates/index.html" %}
+
+{% block title %}{{ config.title }}{% endblock title %}
+
+{% block content %}
+{{ section.content | safe }}
+{% endblock %}

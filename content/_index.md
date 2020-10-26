@@ -1,3 +1,8 @@
 +++
-title = "Posts"
+template = "home.html"
 +++
+
+# About
+
+
+
