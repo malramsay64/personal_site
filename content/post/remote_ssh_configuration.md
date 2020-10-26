@@ -8,7 +8,6 @@ draft = false
 tags = ["devops"]
 +++
 
-
 In the right (or wrong) hands ssh is a powerful tool
 for the remote management of a Unix system.
 Most desktop, or workstation distributions of Linux disable
@@ -322,6 +321,5 @@ This should be sufficient to get started using SSH within the same network.
 To access the service over the internet,
 where possible use the institutional VPN,
 or set up your own.
-
 
 [fqdn wiki]: https://en.wikipedia.org/wiki/Fully_qualified_domain_name

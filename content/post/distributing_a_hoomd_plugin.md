@@ -29,7 +29,6 @@ to simplify the implementation of custom functionality.
 This article documents how I took a plugin I wrote for my research
 and made it installable in a conda environment alongside Hoomd.
 
-
 ## The Plugin
 
 The example plugin is one which I have written for my own research.
@@ -311,7 +310,6 @@ benefit, installing or updating your software is much simpler for you, and
 importantly, anyone else that wants to try it out. For why open source software
 if you don't intend for someone else to actually use it.
 
-
 ## Entire `meta.yaml`
 
 I have included the entire `meta.yaml` file below for ease of copying.
@@ -361,8 +359,6 @@ test:
   commands:
     - make test
 ```
-
-
 [hoomd-plugin-docs]: http://hoomd-blue.readthedocs.io/en/stable/developer.html
 [hoomd-bitbucket]: https://bitbucket.org/glotzer/hoomd-blue/src/maint/
 [hoomd-github]: https://github.com/joaander/hoomd-blue

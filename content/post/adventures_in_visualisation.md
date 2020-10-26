@@ -31,12 +31,12 @@ however my data was not formatted to make the most of what Altair could offer,
 which as a relative newbie to pandas was frustrating.
 Another sticking point with Altair was working out how to customise figures,
 After Matplotlib, I was expecting to search what I wanted to in Google
-and have appropriate stackoverflow answer on the first page of results.
+and have appropriate stack overflow answer on the first page of results.
 With Altair being a new package, this how-to style documentation didn't exist,
 which meant I never worked out how to customise the figure.
 The most frustrating of the default settings was the axis labels
 which use the SI Prefix for large numbers
-i.e. 1M for $1 \times 10^6$  and 1n for $1 \times 10^{-9}$,
+i.e. 1Mm for $1 \times 10^6$  and 1no for $1 \times 10^{-9}$,
 something which I never worked out how to change at the time.
 Another problem I had with Altair (and Matplotlib) was the lack of interactivity.
 I was in the early stages of data investigation
@@ -58,12 +58,12 @@ like ensuring a simulation is running properly.
 Despite having these interactive visualisations,
 bokeh is lacking in the same way as Matplotlib,
 it takes a long time to specify everything required to create the figures.
-While there was a start on a high level plotting interface in the form of [bkcharts][bkcharts],
+While there was a start on a high level plotting interface in the form of [bkcharts],
 the code is now unmaintained and directs users to Holoviews.
 
 ### Holoviews
 
-Like Altair, [Holoviews][holoviews] is a declarative plotting interface,
+Like Altair, [Holoviews] is a declarative plotting interface,
 providing a quick and simple interface for constructing figures.
 Holoviews is structures around the idea of 
 describing data on creation of the dataset,
@@ -94,7 +94,7 @@ this time version 2.0.
 
 Why Altair again?
 When I first tried Altair I was approaching it from Matplotlib,
-with it's extensive documentation
+with its extensive documentation
 in the form of the technical reference and the numerous how to guides.
 This time I was approaching it from Bokeh and Holoviews,
 both of which are relatively new libraries with some teething problems.
@@ -137,6 +137,7 @@ chart.encode(
     size='Acceleration:Q'
 )
 ```
+
 ![Fuel economy (L/100km) vs weight (kg) from the cars dataset.](/static/img/altair-cars-metric.svg)
 
 This allows for only storing the fundamental values in the dataset
@@ -154,6 +155,7 @@ chart.mark_bar().encode(
     y='count():Q',
 )
 ```
+
 ![Histogram of the fuel economy in the cars dataset.](/static/img/altair-cars-hist.svg)
 
 Where setting `bin=True` will create bins with the default parameters,
@@ -167,6 +169,7 @@ chart.mark_bar().encode(
     y='mean(Weight (kg)):Q',
 )
 ```
+
 ![Histogram of the fuel economy in the cars dataset.](/static/img/altair-cars-weight.svg)
 
 For a more comprehensive view of using Altiar,
@@ -184,13 +187,12 @@ it provides a simple and intuitive interface to data
 which at the time of writing makes it the first tool I will reach for
 to understand a dataset.
 
-
 [jakevdp pycon vis]: https://youtu.be/FytuB8nFHPQ?t=3m53s
 [xkcd competing standards]: https://xkcd.com/927/
 [bokeh]: https://bokeh.pydata.org/en/latest/
 [bokeh server]: https://bokeh.pydata.org/en/latest/docs/user_guide/server.html
 [bkcharts]: https://github.com/bokeh/bkcharts
-[holoviews]: https://holoviews.org
+[Holoviews]: https://holoviews.org
 [vega-lite docs]: https://vega.github.io/vega-lite/docs/
 [vega-lite aggregations]: https://vega.github.io/vega-lite/docs/aggregate.html#ops
 [altair docs]: https://altair-viz.github.io/index.html

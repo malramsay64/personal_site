@@ -68,15 +68,10 @@ Conclusion
     - things lost in translation
 - Making the research open benefits everyone
 
-
-
-
-
 “One of the real travesties,” he says, is that “there’s no way you could have reproduced [the Berkeley team’s] algorithm—the way they had implemented their code—from reading their paper.” Palmer
 
  “I had and was very willing to share the code,” he says. What he didn’t have, he says, was the time or personnel to prepare the code in a form that could be useful to an outsider. “When Debenedetti’s group was making their code available,” Limmer explains, “he brought people in to clean up the code and document and run tests on it. He had resources available to him to be able to do that.” At Berkeley, “it was just me trying to get that done myself.” Limmer
 
  After several email exchanges with Limmer and Chandler and a direct plea to Nature editors, the Princeton group finally received a working version of the Berkeley code.
-
 
 [war over water]: https://physicstoday.scitation.org/do/10.1063/PT.6.1.20180822a/full/

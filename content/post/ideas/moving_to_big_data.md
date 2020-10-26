@@ -28,8 +28,6 @@ chosen primarily because they are simple to use.
 Postgresql was also considered for inclusion,
 however, I was unable to quickly get an instance running and working.
 
-
-
 As a solution I looked at using a different tools for iteratively writing to a file
 so
 I was investigating methods of storage
@@ -43,7 +41,6 @@ There are
 As a single person
 This is not nessle there is not a e
 Even if you are not working at the scale of petabytes
-
 
 [wes_pandas_memory]:
 [dask]:

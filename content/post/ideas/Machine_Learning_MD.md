@@ -8,8 +8,7 @@ draft = true
 tags = ["python", "ML"]
 +++
 
-The Problem
------------
+## The Problem
 
 One of the key goals of Molecular Dynamics (MD) is to understand
 the structures that form in the course of a simulation.
@@ -36,8 +35,7 @@ the pg crystal,
 the p2gg crystal, and
 the liquid.
 
-The Data Curation
------------------
+## The Data Curation
 
 With a well defined problem,
 the next step in machine learning is
@@ -87,10 +85,7 @@ have orientations close to parallel or antiparallel
 with that central molecule.
 This gives 6 parameters to use for each molecule.
 
-The Machine Learning
---------------------
-
-
+## The Machine Learning
 
 One of the most persistent issues with
 using supervised machine learning is
@@ -111,8 +106,8 @@ tracking the evolution of the simulation through time.
 To minimise the effect of algorithms learning the dataset,
 there are a few methods we can employ,
 
-
 Learning process
+
 - training, test data
 - cross validation
 - random noise

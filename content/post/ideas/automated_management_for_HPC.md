@@ -9,10 +9,12 @@ tags = ["devops"]
 +++
 
 Research Software, particularly that you are writing for a specific purpose changes rapidly.
+
 - new functionality
 - bug fixes
 
 Managing these versions can be difficult
+
 - Can have many different computers that need updating
     - local machine
     - small test server

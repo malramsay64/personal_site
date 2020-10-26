@@ -19,7 +19,6 @@ which often dates back nearly a century.
 What would today's marching playlist look like?
 In particular for the Sydney Mardis Gras parade.
 
-
 We need a few songs that would be suitable to play,
 so rather than sit down and brainstorm
 I had a different idea.
@@ -37,8 +36,7 @@ As a python developer I quickly came across [Spotipy][spotipy_docs]
 which handles all the http requests so that you don't have to.
 So now I just have to work out how to use it.
 
-Using Spotipy
--------------
+## Using Spotipy
 
 To access all of the available capability of the Spotify API,
 as a developer you need to register your app,
@@ -49,13 +47,11 @@ However there is information you can get without registering anything.
 
 The installation of Spotipy is simply
 
-    pip install spotipy
-
-
+```sh
+pip install spotipy
+```
 
 There are a few different ways of interacting with a
-
-
 
 The official quick march tempo for the Australian Defence Force
 is 116 beats per minute.

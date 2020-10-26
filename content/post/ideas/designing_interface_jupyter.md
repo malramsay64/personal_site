@@ -26,7 +26,6 @@ of being simple for a human to use.
         - import statements
         - consistency
 
-
 Some packages are really good at this:
 
 - scikit-learn

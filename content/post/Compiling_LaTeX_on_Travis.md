@@ -297,7 +297,6 @@ deploy:
     tags: true
 ```
 
-
 ## Conclusion
 
 I have made the entire `.travis.yml` file available for [download][.travis.yml] should you want to
@@ -327,8 +326,10 @@ install biber are below.
 
 [^1]: I should note that MiKTeX will install `biber` on a Windows system. So if you wanted to set
     up a Windows CI config I guess MiKTeX is a great approach.
+
 [^2]: There are more special characters supported, I just listed the most common ones. See the
     [docs][git-check-ref-format] for more specific information.
+
 [^3]: You may notice that the minimal is not listed in the documentation. There is a
     [GitHub issues](https://github.com/travis-ci/docs-travis-ci-com/issues/910#issuecomment-356915625) to
     rectify this in which there is documentation.

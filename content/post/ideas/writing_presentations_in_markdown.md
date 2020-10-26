@@ -85,7 +85,6 @@ Larger font size
 Centering Images
 - all images
 
-
 Reverting to latex
 - There are some things only possible in latex
 - so use latex where required

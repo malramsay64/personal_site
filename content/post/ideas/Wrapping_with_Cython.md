@@ -35,7 +35,6 @@ However in dealing with the general case this didn't reach my performance requir
 A python object was being created for each Voronoi cell,
 a perfectly valid approach
 
-
 [voronoi wikipedia]:
 [qhull]:
 [voro]:

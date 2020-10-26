@@ -6,6 +6,9 @@ draft = true
 
 [taxonomies]
 tags = ["writing"]
+
+[extras]
+latex = true
 +++
 
 In the Sciences,
@@ -28,9 +31,11 @@ have you communicated it effectively?
 A couple of years ago I did the computational component for a paper on
 crystal melting at an interface under flow[^1].
 In this paper we were investigating the behaviour of the stochastic differential equation
-\[
+
+\\[
 \frac{\delta h(\mathcal{z}, \tau)}{\delta \tau} = \Delta + h''[1 + \hat\sigma*2 H(h'')] + \eta(\mathcal{z}, \tau)
-\]
+\\]
+
 which makes no sense without the preceding page of text describing what all the variables mean.
 Even after having implemented a solution to this equation,
 albeit over two years ago,
@@ -45,8 +50,5 @@ this form into something to actually work with on a computer.
 Numerous equally valid methods could be used for
 the discretisataion of this equation for computation,
 and even more methods for dealing with the edge cases.
-
-
-
 
 [^1] Ramsay, M., & Harrowell, P. (2016). Shear melting at the crystal-liquid interface: Erosion and the asymmetric suppression of interface fluctuations. Physical Review E, 93(4), 042608. https://doi.org/10.1103/PhysRevE.93.042608 [#icanhazpdf](papers/PhysRevE.93.042608.pdf)

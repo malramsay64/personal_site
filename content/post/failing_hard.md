@@ -6,6 +6,9 @@ draft = false
 
 [taxonomies]
 tags = ["phd", "research"]
+
+[extra]
+latex = true
 +++
 
 Failure is one of those topics
@@ -52,7 +55,7 @@ including other toy models and real chemical systems.
 The molecule I am studying is comprised of three circles,
 one large and two small, arranged like a Mickey Mouse head.
 
-![The molecule I am studying, three circles arrraged like a Mickey Mouse
+![The molecule I am studying, three circles arranged like a Mickey Mouse
 head.](/static/img/molecules/trimer.png)
 
 To make calculations with these toy systems easier,
@@ -166,12 +169,12 @@ and moment-of-inertia $I$
 to the temperature $T$ providing a route to testing the simulations,
 where the angled brackets $\langle \rangle$ denote an averaged quantity.
 
-$$
+\\[
 \begin{aligned}
-    \langle \frac{1}{2} m v^2 \rangle &= k_B T\\
+    \langle \frac{1}{2} m v^2 \rangle &= k_B T \\\\
     \langle \frac{1}{2} I \omega^2 \rangle &= \frac{1}{2}k_B T
 \end{aligned}
-$$
+\\]
 
 What might not be so obvious here is that the temperature $T$
 in the above equations is not a static quantity,

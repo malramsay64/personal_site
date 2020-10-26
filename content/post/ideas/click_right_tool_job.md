@@ -43,8 +43,10 @@ However, that solution also has a number of drawbacks.
 The hardest part of solving this problem is finding the appropriate tools for the job.
 
 
-    @click.argument('filename', type=click.Path(exists=True))
-    @click.option('--short-desc', prompt='Short Description for filename',
-                  help='Description to put into filename')
-    @click.option('--long-desc', prompt='Long description for caption',
-                  help='Description for caption')
+```python
+@click.argument('filename', type=click.Path(exists=True))
+@click.option('--short-desc', prompt='Short Description for filename',
+              help='Description to put into filename')
+@click.option('--long-desc', prompt='Long description for caption',
+              help='Description for caption')
+```

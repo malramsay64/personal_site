@@ -110,7 +110,6 @@ gives a huge wall of text.
 Using the search functionality to look for instances of 'Total Likes'
 finds the following code snippet
 
-
 ```html
 ...<div class="_3xom">6,546</div><div class="_3xok">Total Likes</div>...
 ```
@@ -192,7 +191,6 @@ The biggest issue I encountered in this project
 was trying to understand the Facebook authentication tokens.
 While this is a simple example,
 it can easily be extended for different use cases.
-
 
 [graph-api]: https://developers.facebook.com/docs/graph-api
 [graph-api explorer]: https://developers.facebook.com/tools/explorer/

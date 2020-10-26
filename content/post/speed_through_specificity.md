@@ -87,7 +87,9 @@ Where speed is important, use the specific tool for the job. In most cases this 
 standard library, instead it is usually just a `pip install` away.[^3]
 
 [^1]: I guess you could also consider this a [bug...][meltdown]
+
 [^2]: I would consider [Tensor Processing Units] (TPUs) in the same category as GPUs, with the main difference being the targeted precision of mathematical operations.
+
 [^3]: Or `conda install` for the tools requiring C/C++ libraries
 
 [Jake van der Plass]: https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/

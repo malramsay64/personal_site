@@ -19,5 +19,4 @@ Vimwiki confguration
 
 ## Useful Links
 
-
 3 days starting next week (Wednesday)

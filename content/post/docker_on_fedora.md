@@ -25,13 +25,13 @@ including the [fedora documentation][docker fedora developer].
 Docker is in the Fedora repositories
 enabling installation using the `dnf` package manager
 
-```shell
+```sh
 sudo dnf install docker
 ```
 
 Once installed, the Docker service can be started by running
 
-```shell
+```sh
 sudo systemctl start docker
 ```
 
@@ -39,7 +39,7 @@ and should you want to start docker
 every time you boot your machine
 you can run
 
-```shell
+```sh
 sudo systemctl enable docker
 ```
 
@@ -49,7 +49,7 @@ to have the Docker service running now and on following reboots.
 
 At this point you might want to try running a Docker container
 
-```shell
+```sh
 $ docker run hello-world
 /usr/bin/docker-current: Got permission denied while trying to connect
 to the Docker daemon socket at unix:///var/run/docker.sock ...
@@ -62,7 +62,7 @@ since it is kind of simple to make a mistake.
 
 If instead you received the message
 
-```shell
+```sh
 $ docker run hello-world
 /usr/bin/docker-current: Cannot connect to the Docker daemon at
 unix:///var/run/docker.sock. Is the docker daemon running?
@@ -70,16 +70,14 @@ unix:///var/run/docker.sock. Is the docker daemon running?
 
 this means you haven't started Docker and need to run
 
-```shell
+```sh
 sudo systemctl start docker
 ```
 
 ## Setting Permissions
 
-{{% alert note %}}
-This section has the potential to break things which are difficult to fix.
-Please be really careful, unlike me.
-{{% /alert %}}
+> This section has the potential to break things which are difficult to fix.
+> Please be really careful, unlike me.
 
 This follows the optional [post installation][docker post-install] steps in the Docker documentation.
 
@@ -87,25 +85,23 @@ For users to have permission to access the Docker socket,
 they either need to be root,
 or they can be a member of the `docker` group.
 
-
-
 This group probably doesn't exist on your system yet,
 though you can check by running
 
-```shell
+```sh
 grep docker /etc/group
 ```
 
 If there is no output the group does not yet exist
 and can be created with the `groupadd` command
 
-```shell
+```sh
 sudo groupadd docker
 ```
 
 The group should now appear in the `/etc/group` file
 
-```shell
+```sh
 $ grep docker /etc/group
 docker:x:1001:
 ```
@@ -113,15 +109,16 @@ docker:x:1001:
 The final step is adding yourself and/or any other users to the Docker group.
 This is done with the command
 
-{{% alert warning %}}
+
+{% alert() %}
 Running the below command without append
 will remove you from the `wheel` group
 meaning you will no longer be able to run commands with `sudo`.
 If you are the only user with root access
 you will have to repair your install from a live image.
-{{% /alert %}}
+{% end %}
 
-```shell
+```sh
 sudo usermod --append --groups docker $USER
 ```
 
@@ -134,7 +131,7 @@ to regain sudo permissions and fix things.
 To check everything is as expected,
 the `groups` command will list the groups you are a part of.
 
-```shell
+```sh
 $ groups
 malcolm wheel docker
 ```
@@ -143,7 +140,7 @@ You should have a list of groups similar to those output above.
 Now you are a member of the `docker` group
 you can test Docker is working with the test image
 
-```shell
+```sh
 $ docker run hello-world
 
 Hello from Docker!
@@ -160,7 +157,7 @@ Now you have Docker working,
 you probably want to do something useful with it
 like access the local filesystem for processing.
 
-```shell
+```sh
 $ docker run --interactive --tty --volume $(pwd):/srv ubuntu
 root@aa7c5f9dcef9:/# _
 ```
@@ -173,7 +170,7 @@ at the `/srv` folder of the container.
 We can try and access the contents of the current directory
 from within the container
 
-```shell
+```sh
 root@aa7c5f9dcef9:/# ls
 ls: can't open '/srv': Permission denied
 ```
@@ -188,7 +185,7 @@ The lowercase `:z` allows multiple containers to access the volume
 and the uppercase `:Z` allows a single container to access the volume.
 The command becomes
 
-```shell
+```sh
 $ docker run -it -v $(pwd):/srv:Z ubuntu
 root@aa7c5f9dcef9:/# ls /srv
 docker_on_fedora.md
@@ -196,7 +193,6 @@ docker_on_fedora.md
 
 Here I have used the more common shortened command line options,
 `-it` for the interactive terminal, and `-v` for the volume.
-
 
 For a program that at first glance appears to simple to install,
 Docker is rather difficult to get set up properly on Fedora.

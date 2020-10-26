@@ -138,9 +138,7 @@ mappings of values using the colon `:` as a separator
 hello: world
 foo: bar
 ```
-
 being the dict `{"hello": "world", "foo": "bar"}` in python.
-
 
 With the goal of being able to easily specify commands required for an experiment in addition to the
 variables to fill into those commands, I have developed [Experi][]. It takes a YAML file as input,
@@ -259,7 +257,6 @@ my science workflow. This is most noticeable with the replication and modificati
 I have a complete record of all the commands and options required for the experiment to run and
 I can focus on modifying values without having to worry about how to loop over the range of
 variables I require.
-
 
 [Experi]: https://github.com/malramsay64/experi
 [experi issues]: https://github.com/malramsay64/experi/issues
