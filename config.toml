@@ -12,7 +12,7 @@ highlight_theme = "inspired-github"
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
 
-theme = "zola-pickles"
+theme = "mals-theme"
 
 title="Malcolm Ramsay"
 generate_feed=true
@@ -24,28 +24,15 @@ taxonomies = [
 [extra]
 # Put all your custom variables here
 
-# Enable KaTeX for the rendering of equations
-katex_enable = true
 # Enable the auto-render addon to KaTeX, which will automaticaly render any
 # equations in the text.
+# Enabling of KaTeX is done on a page-by-page basis, by setting the [extra]
+# configuration `latex = true`.
 katex_auto_render = true
 
-nav = [
-{ name = "About", path = "/about/" },
-{ name = "Blog", path = "/post/" }
+menu_links = [
+{ name = "Home", url = "/" },
+{ name = "Blog", url = "/post/" }
 ]
 
-blog_path = "post"
-
-icon = "icon.png"
-profile_small = false
-profile_large = false
-
-accent = "#05a081"
-accent_light = "#82d0c0"
-
 author = "Malcolm Ramsay"
-
-footer_about = ""
-
-not_found_message = ""
