@@ -32,7 +32,8 @@ katex_auto_render = true
 
 menu_links = [
 { name = "Home", url = "/" },
-{ name = "Blog", url = "/post/" }
+{ name = "Blog", url = "/post/" },
+{ name = "Talks", url = "/talks/" },
 ]
 
 author = "Malcolm Ramsay"
