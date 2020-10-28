@@ -26,10 +26,10 @@ the motion between two separate times.
 In the simplest case, conceptually this is just computing
 
 \\[
-\begin{align}
+\begin{aligned}
 \text{displacement} &= \text{norm}(\text{position}_2 - \text{position}_1) \\\\
 \text{rotation} &= \text{norm}(\text{orientation}_2 - \text{orientation}_1).
-\end{align}
+\end{aligned}
 \\]
 
 For the displacement,
@@ -119,21 +119,21 @@ This can be demonstrated by performing a multiplication with
 the polar form of a complex number.
 
 \\[
-\begin{align}
+\begin{aligned}
 z &= r_1e^{i\theta_1} \times r_2e^{i\theta_2}\\
 &  = r_1r_2e^{i\theta_1 + i\theta_2}\\
 &  = r_1r_2e^{i(\theta_1 + \theta_2)}
-\end{align}
+\end{aligned}
 \\]
 
 Conversely division of a complex number by another is the distance between the two angles
 
 \\[
-\begin{align}
+\begin{aligned}
 z &= r_1e^{i\theta_1} / r_2e^{i\theta_2} \\
   &= \frac{r_1}{r_2}e^{i\theta_1 - i\theta_2} \\
   &= \frac{r_1}{r_2}e^{i(\theta_1 - \theta_2)}
-\end{align}
+\end{aligned}
 \\]
 
 It is possible to do all our intermediate calculations using 
@@ -225,9 +225,9 @@ does an excellent comparison of six different methods.
 Of the methods used to compute rotational magnitude $\Phi$,
 the one I think is most suitable for use in Molecular Dynamics is
 
-\\[
+\[
 \Phi = 2\ \text{arccos}(|\mathbf{q}_1 · \mathbf{q}_2|)
-\\]
+\]
 
 This gives a value on the range $[0, 2\pi]$ in units of radians.
 I think this is most suitable as it gives results in units of radians,
