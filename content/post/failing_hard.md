@@ -56,7 +56,7 @@ The molecule I am studying is comprised of three circles,
 one large and two small, arranged like a Mickey Mouse head.
 
 ![The molecule I am studying, three circles arranged like a Mickey Mouse
-head.](/static/img/molecules/trimer.png)
+head.](/img/molecules/trimer.png)
 
 To make calculations with these toy systems easier,
 I use a system of units in which most quantities have a unitless value of 1.

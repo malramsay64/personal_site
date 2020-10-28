@@ -372,5 +372,5 @@ test:
 [LAMMPS]: http://lammps.sandia.gov/
 [GROMACS]: http://www.gromacs.org/
 [yaml]: http://yaml.org/
-[meta.yaml]: /static/code/hoomd-plugin/meta.yaml
+[meta.yaml]: /code/hoomd-plugin/meta.yaml
 [conda-build-pinning-issue]: https://github.com/conda/conda-build/issues/2571

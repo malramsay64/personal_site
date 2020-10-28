@@ -138,7 +138,7 @@ chart.encode(
 )
 ```
 
-![Fuel economy (L/100km) vs weight (kg) from the cars dataset.](/static/img/altair-cars-metric.svg)
+![Fuel economy (L/100km) vs weight (kg) from the cars dataset.](/img/altair-cars-metric.svg)
 
 This allows for only storing the fundamental values in the dataset
 and being able to compute derived values as part of the figure,
@@ -156,7 +156,7 @@ chart.mark_bar().encode(
 )
 ```
 
-![Histogram of the fuel economy in the cars dataset.](/static/img/altair-cars-hist.svg)
+![Histogram of the fuel economy in the cars dataset.](/img/altair-cars-hist.svg)
 
 Where setting `bin=True` will create bins with the default parameters,
 and the `count():Q` on the `y` axis counts the elements in each bin.
@@ -170,7 +170,7 @@ chart.mark_bar().encode(
 )
 ```
 
-![Histogram of the fuel economy in the cars dataset.](/static/img/altair-cars-weight.svg)
+![Histogram of the fuel economy in the cars dataset.](/img/altair-cars-weight.svg)
 
 For a more comprehensive view of using Altiar,
 have a look at either the [Example Gallery][altair example gallery],

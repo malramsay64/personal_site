@@ -228,7 +228,7 @@ Having configured Travis to compile our document on every commit, it would be ni
 something with the resulting document. Every repository on GitHub has releases, which can be
 accessed by clicking on the releases link which is outlined in red on the image below.
 
-![The link to the releases page on GitHub](/static/code/latex_travis/releases.jpg)
+![The link to the releases page on GitHub](/code/latex_travis/releases.jpg)
 
 GitHub automatically creates a release for every tagged commit in the repository, creating a
 downloadable `.zip` and `.tar.gz` of the state of the repository at that commit. It is also possible
@@ -355,5 +355,5 @@ install biber are below.
 [travis conditional deployment]: https://docs.travis-ci.com/user/deployment#Conditional-Releases-with-on%3A
 [phd-thesis]: https://github.com/malramsay64/phd-thesis
 [usyd-beamer-theme]: https://github.com/malramsay64/usyd-beamer-theme
-[.travis.yml]: /static/code/travis_latex/.travis.yml
-[Makefile]: /static/code/travis_latex/Makefile
+[.travis.yml]: /code/travis_latex/.travis.yml
+[Makefile]: /code/travis_latex/Makefile
