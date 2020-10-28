@@ -15,7 +15,7 @@ rm -rf public
 mkdir public
 
 echo "Generating site"
-hugo
+zola serve
 
 echo "Synchronising Cloud"
 gsutil -m rsync -d -r public gs://malramsay.com/
