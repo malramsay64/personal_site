@@ -18,4 +18,4 @@ echo "Generating site"
 zola build
 
 echo "Synchronising Cloud"
-gsutil -m rsync -d -r public gs://malramsay.com/
+CLOUDSDK_PYTHON=python2 gsutil -m rsync -d -r public gs://malramsay.com/
