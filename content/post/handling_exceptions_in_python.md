@@ -2,7 +2,7 @@
 title= "Handling Exceptions in Numerical Python"
 date = 2020-10-19
 
-draft = true
+draft = false
 
 [taxonomies]
 tags = ["python"]
