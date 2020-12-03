@@ -34,6 +34,7 @@ menu_links = [
 { name = "Home", url = "/" },
 { name = "Blog", url = "/post/" },
 { name = "Talks", url = "/talks/" },
+{ name = "Projects", url = "/projects/" },
 ]
 
 author = "Malcolm Ramsay"
