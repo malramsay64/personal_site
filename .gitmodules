@@ -1,3 +1,6 @@
 [submodule "themes/mals-theme"]
 	path = themes/mals-theme
 	url = https://github.com/malramsay64/mals-theme.git
+[submodule "themes/tale-zola"]
+	path = themes/tale-zola
+	url = https://github.com/aaranxu/tale-zola.git
