@@ -102,7 +102,10 @@ we can make our intent clearer within the narrative of the notebook.
 Now when we load the dataset we can use the line
 
 ```python
-df = read_csv_dataset("data/gapminder_data.csv", categorical_columns=["country", "continent"])
+df = read_csv_dataset(
+  filename="data/gapminder_data.csv",
+  categorical_columns=["country", "continent"]
+)
 ```
 
 which makes it clear to the reader that we want the `country` and `continent` columns to be categorical
