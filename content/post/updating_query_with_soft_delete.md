@@ -2,7 +2,7 @@
 title = "Updating Query with Soft Delete for SQLAlchemy 1.4"
 date = 2021-03-31
 
-draft = True
+draft = false
 
 [taxonomies]
 tags = ["sqlalchemy", "python"]
