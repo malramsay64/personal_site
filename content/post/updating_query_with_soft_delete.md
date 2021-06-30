@@ -25,19 +25,22 @@ however the SQLAlchemy 1.4 release changed some of the internals
 meaning Miguel's implementation no longer works,
 giving the below error
 
-```python3
+```python
 AttributeError: 'QueryWithSoftDelete' object has no attribute '_mapper_zero'
 ```
 
 The fix for this issue is to replace the `_mapper_zero` method with the `_entity_from_pre_ent_zero` method, giving a `with_deleted` method as below.
 
-```python3
+```python
 class QueryWithSoftDelete(BaseQuery):
     ...
 
     def with_deleted(self):
-        return self.__class__(db.class_mapper(self._entity_from_pre_ent_zero().class_),
-                              session=db.session(), _with_deleted=True)
+        return self.__class__(
+            db.class_mapper(self._entity_from_pre_ent_zero().class_),
+            session=db.session(),
+            _with_deleted=True
+        )
 
 ```
 
@@ -47,7 +50,7 @@ With the fix out of the way,
 we can have a look at what the `with_deleted` method is doing.
 The entire code snippet for the `QueryWithSoftDelete` is reproduced below for reference.
 
-```python3
+```python
 class QueryWithSoftDelete(BaseQuery):
     def __new__(cls, *args, **kwargs):
         obj = super(QueryWithSoftDelete, cls).__new__(cls)
@@ -61,8 +64,11 @@ class QueryWithSoftDelete(BaseQuery):
         pass
 
     def with_deleted(self):
-        return self.__class__(db.class_mapper(self._entity_from_pre_ent_zero().class_),
-                              session=db.session(), _with_deleted=True)
+        return self.__class__(
+            db.class_mapper(self._entity_from_pre_ent_zero().class_),
+            session=db.session(),
+            _with_deleted=True
+        )
 ```
 
 The `with_deleted` method provides a way to transform the Query
