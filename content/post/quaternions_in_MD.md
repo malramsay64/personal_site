@@ -8,7 +8,7 @@ math = true
 tags = ["python", "maths"]
 
 [extra]
-latex = true
+katex = true
 +++
 
 In the understanding of the dynamics of a molecule in a Molecular Dynamics (MD) Simulation

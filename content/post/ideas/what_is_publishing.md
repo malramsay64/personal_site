@@ -8,7 +8,7 @@ draft = true
 tags = ["writing"]
 
 [extras]
-latex = true
+katex = true
 +++
 
 In the Sciences,

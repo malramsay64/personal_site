@@ -12,7 +12,7 @@ highlight_theme = "inspired-github"
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
 
-theme = "mals-theme"
+theme = "tale-zola"
 
 title="Malcolm Ramsay"
 generate_feed=true
@@ -23,18 +23,22 @@ taxonomies = [
 
 [extra]
 # Put all your custom variables here
+author = "Malcolm Ramsay"
+github = "https://github.com/malramsay64"
+email  = "m@malramsay.com"
 
-# Enable the auto-render addon to KaTeX, which will automaticaly render any
-# equations in the text.
-# Enabling of KaTeX is done on a page-by-page basis, by setting the [extra]
-# configuration `latex = true`.
-katex_auto_render = true
+timeformat = "%Y-%m-%d"
 
-menu_links = [
+menu = [
 { name = "Home", url = "/" },
 { name = "Blog", url = "/post/" },
 { name = "Talks", url = "/talks/" },
 { name = "Projects", url = "/projects/" },
+# { name = "Publications", url = "/publication/" },
 ]
 
-author = "Malcolm Ramsay"
+[extra.footer]
+start_year = "2017"  # start year of the site
+end_year = "2021"    # end year of the site
+info = ""
+

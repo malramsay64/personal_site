@@ -1,5 +1,5 @@
 +++
-title = "Failing Hard: How I 'lost' two years of data."
+title = "Failing Hard: How I 'lost' two years of data"
 date = 2018-11-22
 
 draft = false
@@ -8,7 +8,7 @@ draft = false
 tags = ["phd", "research"]
 
 [extra]
-latex = true
+katex = true
 +++
 
 Failure is one of those topics
