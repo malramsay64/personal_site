@@ -1,8 +1,8 @@
 +++
-title = "Why is it always datetimes"
+title = "What's the time Azure Synapse"
 date = 2022-02-07
 
-draft = true
+draft = false
 
 [taxonomies]
 tags = ["azure", "timezone", "data science"]
@@ -182,7 +182,7 @@ in the Parquet file as `TIMESTAMP_MILLIS`,
 that is, using the legacy annotation.
 
 For Synapse to be a properly fulfil a role within a Data Science toolkit
-Microsoft really needs to properly support TIMESTAMPs 
+Microsoft really needs to properly support TIMESTAMPs
 from the Parquet file format.
 Currently, Synapse is unsuitable as part of a data pipeline
 that handles datetime data.
@@ -192,7 +192,7 @@ severly limits the usefullness of Synapse,
 and makes it difficult to recommend
 as part of a broader data analytics platform.
 
-[^1]: During summer these are: AEST, AEDT, ACDT, ACST, AWST, and Eucla. 
+[^1]: During summer these are: AEST, AEDT, ACDT, ACST, AWST, and Eucla.
   There are also at least 4 more in use off mainland Australia.
 
 [^2]: Microseconds are also a supported option. And in newer versions of the
