@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta name="Malcolm Ramsay" content="PyScript Demo">
+    <meta charset="UTF-8">
+    <title>Demonstration of PyScript for Data Science</title>
+
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+      - altair
+      - pandas
+      - scipy
+      - scikit-learn
+      - paths:
+        - ./Ad_click_prediction_train.csv.zip
+        - ./Ad_click_prediction_test.csv.zip
+    </py-env>
+
+    <style>
+      p { margin-top: 1em; margin-bottom: 1em; }
+    </style>
+
+  </head>
+  <body class="max-w-xl mx-auto">
+    <h1 class="text-2xl text-bold">Data Science with PyScript</h1>
+
+    <p>We are intested in being able to predict click through rates.
+      To do this we need some idea of how some of the different variables
+      available to us affect this rate.
+      The click through rate is the percentage of clicks we get
+      over the total number of <a href="https://en.wikipedia.org/wiki/Impression_(online_media)">impressions</a>,
+      which is the total number of times the advertisement was served.
+    </p>
+
+    <py-script>
+# Import of packages requried for this analysis
+import altair as alt
+import numpy as np
+import pandas as pd
+    </py-script>
+
+    <py-script>
+# Reading in the dataset, ensuring all the values are set appropriately
+df = (
+  pd.read_csv("Ad_click_prediction_train.csv.zip", parse_dates=[1], infer_datetime_format=True)
+  .assign(
+    # We will want to look at the time of day, so we calculate it here
+    time_of_day=lambda x: x["DateTime"].dt.hour,
+    # This allows us to encode gender as a numerical value. For this exercise
+    # we get 0 and 1, and don't care which is which. Unknown could be set to 0.5.
+    gender_num=lambda x: x["gender"].astype('category').cat.codes,
+    # There is no user depth of 0, since the ML algorithms don't like NaN values,
+    # we replace all these with 0.
+    user_depth=lambda x: x["user_depth"].fillna(0),
+  )
+)
+    </py-script>
+
+    <py-script>
+df_fraction_clicked = (
+  df.groupby(["gender", "time_of_day"])
+  ["is_click"]
+  # We care about the total number of impressions (count)
+  # and the number of clicks (sum) since a click is a 1.
+  .agg(["count", "sum"])
+  # Calculate the click through rate
+  .assign(click_through_rate=lambda x: (x["sum"] / x["count"]) * 100)
+  .reset_index()
+)
+    </py-script>
+
+    <p>One of the ways we can examine the data is
+      the total number of impressions over time,
+      to understand when and how many
+      people are seeing the advertisement.
+    </p>
+
+    <div class='h-96' id="impression-count"></div>
+    <py-script output="impression-count">
+(
+  alt.Chart(df_fraction_clicked)
+  .mark_line()
+  .encode(
+    x=alt.X("time_of_day", title="Hour of Day"),
+    y=alt.Y("count", title="Impressions"),
+    color=alt.Color("gender", title="Gender"),
+    tooltip=["count"]
+  )
+)
+    </py-script>
+
+    <p>The impression count shows a sharpe decrease in
+      the number of impressions between midnight and 2 am
+      from ~34,000 impressions at the 10 pm peak
+      to ~2,000 impressions at 2 am.
+      This indicates that a significant portion of the impressions
+      are from users in similar time zones.
+      Additionally there are significantly more
+      Male users than female users,
+      however they both follow the same trends.
+    </p>
+
+    <div class='h-96' id="click-count"></div>
+    <py-script output="click-count">
+(
+  alt.Chart(df_fraction_clicked)
+  .mark_line()
+  .encode(
+    x=alt.X("time_of_day", title="Hour of Day"),
+    y=alt.Y("sum", title="Clicks"),
+    color=alt.Color("gender", title="Gender"),
+    tooltip=["sum"]
+  )
+)
+    </py-script>
+
+    <p>We can also look at how these impressions translate to clicks
+      by plotting just the the number of clicks as a function of time.
+      This has a remarkably similar shape to that of the number of impressions,
+      albeit with smaller numbers.
+      The similar shape of the number of sessions and the number of clicks
+      can be validated by plotting the click through rate,
+      which hovers between 6 and 7% throughout the entire day.
+    </p>
+
+    <div class='h-96' id="click_throughs"></div>
+    <py-script output="click_throughs">
+(
+  alt.Chart(df_fraction_clicked)
+  .mark_line()
+  .encode(
+    x=alt.X("time_of_day", title="Hour of Day"),
+    y=alt.Y("click_through_rate", title="Click Through Rate (CTR)"),
+    color=alt.Color("gender", title="Gender"),
+    tooltip=["click_through_rate"]
+  )
+)
+    </py-script>
+
+    <p>While there are some changes throughout the day
+      these mostly correspond to the times of fewer impressions,
+      making the data less reliable.
+      Performing some Monte Carlo sampling could give an indication
+      of the error bars in these areas
+      which I expect to be significantly larger.
+      The peak in CTR at 7am however
+      definitely warrants further investigation.
+    </p>
+
+    <p>With no easily observable link
+      between click through rates and gender,
+      we could look to statistical tests to identify any difference.
+      With the null hypothesis being that there is no difference
+      in click through rate between Females and Males
+      we can use the <a href="https://en.wikipedia.org/wiki/Chi-squared_test">Chi-squared test</a>
+      to determine whether the values we observe reject this hypothesis.
+      <span id="p-value"></span>
+      This means our null hypothesis is incorrect,
+      there is a difference in the click through rate
+      attributable to gender.
+
+    </p>
+
+    <py-script output="p-value">
+from scipy.stats.contingency import chi2_contingency
+_, p_value, _, _ = chi2_contingency(pd.crosstab(df["gender_num"], df["is_click"]))
+print(f"The observed p-value is {p_value:.2}, less than the 0.05 value usually associated with significance.", end="")
+    </py-script>
+
+    <h2 class="text-xl text-bold">Applying Machine Learning</h2>
+
+    <p>With somewhat of an understanding of the dataset as a whole
+      we can look to apply Machine Learning to the prediciton of clicks.
+      The aim here is to be able to predict which users are likely to click through
+      which can be used to futher target advertising
+      and to predict the future behaviour of customers.
+    </p>
+
+    <p>One of the ways we can simplify the machine learning models
+      is identifying whether there is any correlation between the features
+      and is_click.
+    </p>
+
+    <div class='min-h-48' id="correlation"></div>
+    <py-script output="correlation">
+selected_columns = ["session_id", "time_of_day", "user_id", "campaign_id", "gender", "user_depth", "is_click"]
+df_corr = df[selected_columns].corr().reset_index().melt(id_vars="index")
+alt.Chart(df_corr).encode(x="index", y="variable").mark_rect().encode(color="value")
+    </py-script>
+
+    <p>The correlation matrix shows very little correlation between the columns
+      we have chosen to use in this example.
+      Rather than just looking at correlation,
+      we can investigate whether the features
+      are important to correctly predicting a model.
+      For tabular, categorical data, a decision tree
+      is an excellent Machine Learning model.
+      When combining many decision trees as a RandomForest,
+      it is possible to improve the the accuracy.
+      Another benefit of a RandomForest approach
+      is the ability to determine which of the features
+      are most important for the prediciton,
+      which scikit learn's <a href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html">ExtraTreesClassifier</a> does for us.
+      Variations on the RandomForest approach,
+      like gradient boosting are other models that would be ideal
+      for this scenario.
+    </p>
+
+    <py-script class='mx-auto'>
+# from sklearn.ensemble import ExtraTreesClassifier
+# X = df[["time_of_day", "campaign_id", "gender_num", "user_depth"]]
+# y = df["is_click"]
+# model = ExtraTreesClassifier()
+# model.fit(X, y)
+# pd.DataFrame([model.feature_importances_], columns=X.columns).transpose()
+pd.DataFrame({"time_of_day": 0.366, "campaign_id": 0.557, "gender_num": 0.022, "user_depth": 0.054}, index=[0])
+    </py-script>
+
+    <p>This tells us the campaign_id feature is most important for
+      predicting whether a user will click,
+      followed by the time of day.
+      This is very good information for the marketing team,
+      since the experiments they are doing have a
+      large impact on whether a user clicks.
+    </p>
+
+    <h2 class="text-xl text-bold">Limitations of PyScript</h2>
+
+    <p>
+      All the analysis so far has been running locally in the browser using <a href="https://pyscript.net/">PyScript</a>
+      with the exception of identifying the most important features of the dataset.
+      This is due to the significant resources required by RandomForest type models,
+      making this unfeasible for running in real time within the browser.
+    </p>
+
+    <p>
+      As an alternative, a simpler Decision Tree based model can be used.
+      We are even able to perform a cross validation,
+      giving an indication of the model score.
+      We have chosen to use a balanced accuracy
+      which separately combines the accuracy of clicks and no-clicks
+      to account for the imbalance in the data for these classes.
+    </p>
+
+    <py-script>
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import cross_val_score
+X = df[["time_of_day", "campaign_id", "gender_num", "user_depth"]]
+y = df["is_click"]
+model = DecisionTreeClassifier()
+score = cross_val_score(model, X, y, scoring="accuracy")
+model.fit(X, y)
+f"The decision tree gives a balanced accuracy of {score.mean() * 100:.2f} ± {score.std() * 100:.2}%"
+    </py-script>
+
+    <p>While using cross validation provides an indication of how well the model performs
+      it is critical to understand performance on data the model has not yet seen.
+      For this we need to use a set of data that has been held out.
+      For the CTR data this has been done for us, with a test data 
+      however unfortunately the known true values are not present here,
+      since this data comes from Kaggle.
+    </p>
+
+    <py-script>
+# Reading in the test dataset in the same way as the training data
+df = (
+  pd.read_csv("Ad_click_prediction_test.csv.zip", parse_dates=[1], infer_datetime_format=True)
+  .assign(
+    time_of_day=lambda x: x["DateTime"].dt.hour,
+    gender_num=lambda x: x["gender"].astype('category').cat.codes,
+    user_depth=lambda x: x["user_depth"].fillna(0),
+  )
+)
+X = df[["time_of_day", "campaign_id", "gender_num", "user_depth"]]
+y_predict = model.predict(X)
+    </py-script>
+
+    <py-script>
+def predict(time_of_day: int, campaign_id: int, gender: int=0, user_depth: int=0):
+      y =  model.predict(np.array([time_of_day, campaign_id, gender, user_depth]).reshape(-1, 1))
+    </py-script>
+
+    <div>
+      <p> Use the predict function to see the effect time of day, campaign_id, gender, and user_depth
+        on the prediction.
+      </p>
+      <py-repl id="my-repl">predict(time_of_day=5, campaign_id=118601, gender=0, user_depth=0)</py-repl>
+    </div>
+
+    <h2 class="text-xl text-bold">Further Work</h2>
+
+    <p>Currently we are only looking at each of the interactions
+      with the campaigns in isolation.
+      However, there are users who have multiple impressions
+      which can provides a way to investigate how 
+      multiple impressions influence the click through rate.
+      Along with the number of impressions requried for a click
+      analysis can be done on the time when a click occured
+      compared to when they didn't occur,
+      finding times when particular users are more receptive to clicks.
+    </p>
+
+    <p>Further work can also be done in optimising the features
+      use within a decision tree type model.
+      Alternatively, a neural network type model could be used 
+      which removes some of the requriement for feature engineering 
+      at the expense of longer time required for training and a larger dataset.
+      This neural network model could also be integrated into a real-time
+      application should it be simple enough architecture
+      which is expected for this type of problem.
+    </p>
+
+    <p> Unfortunately using PyScript is a little slow to set up,
+      which surely can be optimised with some more work.
+      However another alternative is to have a predictive model
+      already compiled to WASM,
+      which would be a significantly faster startup.
+  </body>
+</html>
