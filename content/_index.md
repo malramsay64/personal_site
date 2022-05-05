@@ -4,19 +4,23 @@ template = "about.html"
 
 # About Me
 
-I have recently completed a PhD in Computational Chemistry,
-where I applied Data Science techniques
-to improve our understanding of crystal formation within computer simulations.
-I am particularly skilled at finding the limit
-of the computational systems available to me,
-whether that be storage, memory, compute, networking, or software
-and finding optimisations to continue my work.
+I am a highly motivated Data Scientist,
+experienced in the management, analysis, and communication of data.
+My strengths lie in developing an understanding of data
+to effciently perform complex transformations on large datasets,
+presenting relavent information in a cohesive, understandable and actionable manner.
+
+I am currently interested in the use of
+data science tools in the web browser,
+utilising the compute power we carry around with us
+to provide meaningful data insights.
 
 # Interests
 
 - Data Science
 - Machine Learning
 - Data Visualisation
+- Web Assembly
 - Python
 - Rust
 
