@@ -13,6 +13,9 @@
       - pandas
       - scipy
       - scikit-learn
+      - paths:
+        - ./Ad_click_prediction_train.csv.zip
+        - ./Ad_click_prediction_test.csv.zip
     </py-env>
 
     <style>
@@ -42,7 +45,7 @@ import pandas as pd
 # Reading in the dataset, ensuring all the values are set appropriately
 df = (
   # PyIodide doesn't yet support https, the ssl library hasn't been ported to WASM
-  pd.read_csv("http://malramsay.com/projects/pyscript_demp/Ad_click_prediction_train.csv.zip", parse_dates=[1], infer_datetime_format=True)
+  pd.read_csv("Ad_click_prediction_train.csv.zip", parse_dates=[1], infer_datetime_format=True)
   .assign(
     # We will want to look at the time of day, so we calculate it here
     time_of_day=lambda x: x["DateTime"].dt.hour,
@@ -265,7 +268,7 @@ f"The decision tree gives a balanced accuracy of {score.mean() * 100:.2f} ± {sc
 # Reading in the test dataset in the same way as the training data
 df = (
   # PyIodide doesn't yet support https, the ssl library hasn't been ported to WASM
-  pd.read_csv("http://malramsay.com/projects/pyscript_demo/Ad_click_prediction_test.csv.zip", parse_dates=[1], infer_datetime_format=True)
+  pd.read_csv("Ad_click_prediction_test.csv.zip", parse_dates=[1], infer_datetime_format=True)
   .assign(
     time_of_day=lambda x: x["DateTime"].dt.hour,
     gender_num=lambda x: x["gender"].astype('category').cat.codes,
