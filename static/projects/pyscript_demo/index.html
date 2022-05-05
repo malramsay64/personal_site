@@ -14,8 +14,7 @@
       - scipy
       - scikit-learn
       - paths:
-        - ./Ad_click_prediction_train.csv.zip
-        - ./Ad_click_prediction_test.csv.zip
+        - /Ad_click_prediction_train.csv.zip
     </py-env>
 
     <style>
@@ -266,17 +265,16 @@ f"The decision tree gives a balanced accuracy of {score.mean() * 100:.2f} ± {sc
 
     <py-script>
 # Reading in the test dataset in the same way as the training data
-df = (
-  # PyIodide doesn't yet support https, the ssl library hasn't been ported to WASM
-  pd.read_csv("Ad_click_prediction_test.csv.zip", parse_dates=[1], infer_datetime_format=True)
-  .assign(
-    time_of_day=lambda x: x["DateTime"].dt.hour,
-    gender_num=lambda x: x["gender"].astype('category').cat.codes,
-    user_depth=lambda x: x["user_depth"].fillna(0),
-  )
-)
-X = df[["time_of_day", "campaign_id", "gender_num", "user_depth"]]
-y_predict = model.predict(X)
+# df = (
+#  pd.read_csv("Ad_click_prediction_test.csv.zip", parse_dates=[1], infer_datetime_format=True)
+#  .assign(
+#    time_of_day=lambda x: x["DateTime"].dt.hour,
+#    gender_num=lambda x: x["gender"].astype('category').cat.codes,
+#    user_depth=lambda x: x["user_depth"].fillna(0),
+#  )
+#)
+#X = df[["time_of_day", "campaign_id", "gender_num", "user_depth"]]
+#y_predict = model.predict(X)
     </py-script>
 
     <py-script>
