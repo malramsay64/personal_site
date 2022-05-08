@@ -13,7 +13,7 @@
       - pandas
       - scipy
       - scikit-learn
-      - paths: ["./ad_click_prediction_test.csv", "./ad_click_prediction_train.csv"]
+      - paths: ["./ad_click_prediction_test.tar.gz", "./ad_click_prediction_train.tar.gz"]
     </py-env>
 
     <style>
@@ -43,7 +43,7 @@ import pandas as pd
 # Reading in the dataset, ensuring all the values are set appropriately
 df = (
   # PyIodide doesn't yet support https, the ssl library hasn't been ported to WASM
-  pd.read_csv("ad_click_prediction_train.csv", parse_dates=[1], infer_datetime_format=True)
+  pd.read_csv("ad_click_prediction_train.tar.gz", parse_dates=[1], infer_datetime_format=True)
   .assign(
     # We will want to look at the time of day, so we calculate it here
     time_of_day=lambda x: x["DateTime"].dt.hour,
@@ -265,7 +265,7 @@ f"The decision tree gives a balanced accuracy of {score.mean() * 100:.2f} ± {sc
     <py-script>
 # Reading in the test dataset in the same way as the training data
 df = (
-  pd.read_csv("ad_click_prediction_test.csv", parse_dates=[1], infer_datetime_format=True)
+  pd.read_csv("ad_click_prediction_test.tar.gz", parse_dates=[1], infer_datetime_format=True)
   .assign(
     time_of_day=lambda x: x["DateTime"].dt.hour,
     gender_num=lambda x: x["gender"].astype('category').cat.codes,
