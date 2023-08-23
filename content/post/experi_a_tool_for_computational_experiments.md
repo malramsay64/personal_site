@@ -26,7 +26,7 @@ a complete record of every simulation that I run which is version controllable.
 
 Experi is installable using both `pip` and `conda`,
 
-```shell
+```sh
 $ pip install experi
 ```
 

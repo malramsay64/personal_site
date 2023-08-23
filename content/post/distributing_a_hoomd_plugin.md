@@ -279,7 +279,7 @@ uploading to [Anaconda Cloud][], which are both required in the root
 environment. You can install both packages with the command below, where the
 `-n` flag specifies installing to the `root` environment.
 
-```shell
+```sh
 $ conda install -n root conda-build anaconda-client
 ```
 
@@ -296,7 +296,7 @@ the upload.
 With your package uploaded to the Anaconda Cloud, anybody can install it by specifying your
 repository. You can install my plugin with the command
 
-```shell
+```sh
 $ conda install -c malramsay hoomd-harmonic-force
 ```
 

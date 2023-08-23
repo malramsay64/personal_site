@@ -15,7 +15,7 @@ remote access over ssh by default.
 The simplest method to check if you have ssh server running on your machine
 is to run
 
-```shell
+```sh
 $ ssh localhost
 ```
 
@@ -40,7 +40,7 @@ you are also enabling remote access for anyone else that might want to try and l
 The package required for installation is in most distributions named `openssh-server`.
 So for Ubuntu running the command;
 
-```shell
+```sh
 $ sudo apt install openssh-server
 ```
 
@@ -57,14 +57,14 @@ and started now to test.
 
 To start the openssh server, run the below command
 
-```shell
+```sh
 $ sudo systemctl start ssh
 ```
 
 which is using the `systemd` init system to start the openssh server instance.
 For fedora and CentOS, the ssh service instead has the name sshd so run
 
-```shell
+```sh
 $ sudo systemctl start sshd
 ```
 
@@ -72,7 +72,7 @@ to start the server instance.
 Since this is probably a service you want running automatically on boot,
 running the command
 
-```shell
+```sh
 $ sudo systemctl enable ssh
 ```
 
@@ -82,7 +82,7 @@ Other useful commands for `systemctl` are `stop`, `restart`, and `disable`
 Once the ssh server is running
 our command to connect at localhost
 
-```shell
+```sh
 $ ssh localhost
 ```
 
@@ -119,7 +119,7 @@ To find the name of the computer we are working on,
 also known as the hostname,
 we can use the `hostname` command.
 
-```shell
+```sh
 $ hostname -f
 lovelace.staff.sydney.edu.au
 ```
