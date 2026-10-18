@@ -2,7 +2,7 @@
 # CI runs these same recipes, so local runs and CI can't drift apart.
 #
 # Needs zola (version in netlify.toml), plus for the checks: lychee, harper-cli,
-# pipx (zizmor), jq, and npx with Chrome (Lighthouse, Wrangler).
+# uv (zizmor), jq, and npx with Chrome (Lighthouse, Wrangler).
 
 set positional-arguments
 
@@ -91,7 +91,7 @@ prose-files:
 
 # Audit the GitHub Actions workflows (online audits run when GH_TOKEN is set; pass --offline to skip)
 zizmor *args:
-    pipx run zizmor=={{ zizmor_version }} --persona=pedantic "$@" .github
+    uvx zizmor@{{ zizmor_version }} --persona=pedantic "$@" .github
 
 # Run Lighthouse against a local build; extra args go to lhci
 lighthouse *args:

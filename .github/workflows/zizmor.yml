@@ -25,6 +25,7 @@ jobs:
           persist-credentials: false
 
       - uses: $/.github/actions/setup-just
+      - uses: $/.github/actions/setup-uv
 
       - name: Run zizmor
         env:
