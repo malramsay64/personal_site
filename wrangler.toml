@@ -1,0 +1,16 @@
+# Cloudflare Workers static assets deploy of the built Zola site.
+# Deployed from .github/workflows/build.yml on pushes to main.
+name = "malramsay-com"
+compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./public"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+
+# Uncomment to serve malramsay.com from this Worker, once ready to move off Netlify.
+# Remove the existing DNS records for malramsay.com and www first.
+# routes = [
+#   { pattern = "malramsay.com", custom_domain = true },
+#   { pattern = "www.malramsay.com", custom_domain = true },
+# ]
