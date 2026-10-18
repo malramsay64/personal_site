@@ -317,7 +317,7 @@ requirements:
   build:
     - python 3.6.1
   run:
-    - python {{ pin_compatible('python', max_pin='x.x.x') }}
+    - python {% raw %}{{ pin_compatible('python', max_pin='x.x.x') }}{% endraw %}
 
 build: number: 0
 test:

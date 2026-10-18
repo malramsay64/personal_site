@@ -154,7 +154,7 @@ more detail in the rest of this document.
 3. Once signed in to Travis CI, go to your profile page and enable the repository you want to
    build.
 4. Create a `.travis.yml` file in the repository which tells Travis CI what to do. What you need
-   to put in the file is addressed [below]({{<ref "#travis.yml" >}}).
+   to put in the file is addressed [below](#travis.yml).
 5. Commit the `.travis.yml` file to the repository and push to GitHub. Travis will see the commit
    and start the build process.
 6. Any further commits to the repository, whether to the master branch, other branches, tags, or

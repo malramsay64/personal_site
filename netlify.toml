@@ -15,3 +15,9 @@ ZOLA_VERSION = "0.23.6"
 
 [context.deploy-preview]
 command = "zola build --base-url $DEPLOY_PRIME_URL"
+
+# Old tale-zola feed location
+[[redirects]]
+  from = "/atom.xml"
+  to = "/post/feed.xml"
+  status = 301
