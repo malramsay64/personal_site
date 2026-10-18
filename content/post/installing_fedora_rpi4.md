@@ -1,5 +1,6 @@
 +++
 title = "Installing Fedora 35 on Raspberry Pi 4"
+description = "Step-by-step instructions for installing Fedora 35 on a Raspberry Pi 4."
 date = 2022-01-08
 
 draft = true

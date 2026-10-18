@@ -1,5 +1,6 @@
 +++
 title = "Compiling LaTeX on Travis-CI"
+description = "Using Travis-CI to automatically compile LaTeX documents and publish the PDFs whenever you push."
 date = 2018-07-16
 
 draft = false

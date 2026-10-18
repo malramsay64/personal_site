@@ -1,5 +1,6 @@
 +++
 title = "A Complete Guide to Docker on Fedora"
+description = "A complete guide to installing and configuring Docker on Fedora so that it is actually usable."
 date = 2018-09-02
 
 draft = false

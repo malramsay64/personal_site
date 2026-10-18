@@ -1,5 +1,6 @@
 +++
 title = "Scraping Data from Facebook"
+description = "Scraping and analysing Facebook data with Python for a friendly band competition."
 date = 2018-05-09
 
 draft = false

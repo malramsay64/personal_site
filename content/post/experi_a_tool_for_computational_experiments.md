@@ -1,5 +1,6 @@
 +++
 title = "Experi: A tool for computational experiments"
+description = "Introducing Experi, a tool for running computational experiments over a large parameter space on HPC systems."
 date = 2018-06-25
 
 draft = false

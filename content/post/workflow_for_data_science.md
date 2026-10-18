@@ -1,5 +1,6 @@
 +++
 title = "A Workflow for Data Science"
+description = "A workflow for data science that combines Jupyter notebooks with reusable, tested Python code."
 date = 2021-06-29
 
 draft = false

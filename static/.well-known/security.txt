@@ -1,0 +1,4 @@
+Contact: mailto:m@malramsay.com
+Expires: 2027-10-18T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://malramsay.com/.well-known/security.txt

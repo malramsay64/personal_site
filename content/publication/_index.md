@@ -9,7 +9,7 @@ generate_feeds = false
 [extra]
 lang = "en"
 title = "Publications"
-subtitle = ""
+subtitle = "Peer-reviewed research on the structure and dynamics of liquids and crystals"
 categorized = false
 back_to_top = true
 +++

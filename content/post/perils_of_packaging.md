@@ -1,5 +1,6 @@
 +++
 title = "The Perils of Packaging in Python"
+description = "The pitfalls that the standard guides to packaging a Python application don't cover."
 date = 2018-01-07
 
 draft = false

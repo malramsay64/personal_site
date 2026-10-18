@@ -9,9 +9,8 @@ generate_feeds = false
 [extra]
 lang = "en"
 title = "Talks"
-subtitle = ""
+subtitle = "Talks and webinars on data science, Python and research training"
 categorized = false
 back_to_top = true
 +++
 
-# Talks

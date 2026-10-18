@@ -1,5 +1,6 @@
 +++
 title="Optimising the Learning Experience for Researchers at all Levels"
+description = "How Intersect structures programming training for researchers at every level of experience."
 date = 2020-10-22
 +++
 

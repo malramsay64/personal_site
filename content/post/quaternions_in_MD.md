@@ -1,5 +1,6 @@
 +++
 title = "Quaternions for Orientation in MD"
+description = "Using quaternions to represent and compare molecular orientations in molecular dynamics simulations."
 date = 2017-09-13
 
 [taxonomies]

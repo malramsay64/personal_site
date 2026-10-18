@@ -1,5 +1,6 @@
 +++
 title="A Showcase of Data Analysis in Python and R: A Case Study using COVID-19 Data"
+description = "A webinar demonstrating initial analysis of COVID-19 datasets using both Python and R."
 date=2020-08-11
 +++
 

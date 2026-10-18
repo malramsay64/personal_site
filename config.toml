@@ -34,6 +34,7 @@ nav = [
   { name = "blog", path = "/post" },
   { name = "talks", path = "/talks" },
   { name = "projects", path = "/projects" },
+  { name = "tags", path = "/tags" },
   { name = "github", path = "https://github.com/malramsay64" },
 ]
 
@@ -44,6 +45,7 @@ links = [
   { name = "Email", icon = "email", url = "mailto:m@malramsay.com" },
 ]
 blog_section_path = "/post"
+og_image = "img/og.png"
 
 back_link_text = "Back"
 color_scheme = "auto"
