@@ -28,9 +28,9 @@ latest=${ZOLA_LATEST:-$(curl -fsSL \
     ${GITHUB_TOKEN:+-H "Authorization: Bearer $GITHUB_TOKEN"} \
     https://api.github.com/repos/getzola/zola/releases/latest \
     | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')}
-current=$(sed -n 's/^ZOLA_VERSION = "\(.*\)"/\1/p' netlify.toml)
+current=$(sed -n 's/^zola_version := "\(.*\)"/\1/p' justfile)
 if [[ -n $latest && $latest != "$current" ]] \
     && [[ $(printf '%s\n%s\n' "$current" "$latest" | sort -V | tail -1) == "$latest" ]]; then
-    sed -i "s/^ZOLA_VERSION = \".*\"/ZOLA_VERSION = \"$latest\"/" netlify.toml
+    sed -i "s/^zola_version := \".*\"/zola_version := \"$latest\"/" justfile
     echo "zola: $current -> $latest"
 fi

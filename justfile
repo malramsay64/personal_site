@@ -1,11 +1,13 @@
 # Commands for building and checking the site. Run `just` to list them.
 # CI runs these same recipes, so local runs and CI can't drift apart.
 #
-# Needs zola (version in netlify.toml), plus for the checks: lychee, harper-cli,
+# Needs zola (zola_version below), plus for the checks: lychee, harper-cli,
 # uv (zizmor), jq, and npx with Chrome (Lighthouse, Wrangler).
 
 set positional-arguments
 
+# Bumped monthly by scripts/maintenance.sh; CI installs this version.
+zola_version := "0.23.6"
 zizmor_version := "1.31.1"
 lhci_version := "0.15.1"
 wrangler_version := "4.151.1"
@@ -18,6 +20,7 @@ default:
 
 # Build the site into public/ and fill in its CSP; extra args go to zola build
 build *args:
+    @zola --version | grep -qx "zola {{ zola_version }}" || echo "warning: expected zola {{ zola_version }}, found $(zola --version)" >&2
     zola build "$@"
     just csp
 
@@ -61,13 +64,15 @@ csp public="public":
             )
         return LIGHTENSE_STYLE_HASHES
 
+    def demos(public):
+        """The project demos: third-party builds under /projects/<demo>/."""
+        return [p.name for p in (public / "projects").iterdir() if p.is_dir()]
+
     def pages(public):
+        skip = {("projects", demo) for demo in demos(public)}
         for path in public.rglob("*.html"):
-            rel = path.relative_to(public).parts
-            # The project demos are third-party builds and don't get this CSP.
-            if rel[0] == "projects" and len(rel) > 2:
-                continue
-            yield path
+            if path.relative_to(public).parts[:2] not in skip:
+                yield path
 
     def main(public="public"):
         public = Path(public)
@@ -99,7 +104,11 @@ csp public="public":
         text = headers.read_text(encoding="utf-8")
         if PLACEHOLDER not in text:
             sys.exit(f"{headers}: no {PLACEHOLDER} placeholder (already filled in?)")
-        headers.write_text(text.replace(PLACEHOLDER, csp), encoding="utf-8")
+        text = text.replace(PLACEHOLDER, csp)
+        # The demos run third-party code that this policy would block.
+        for demo in sorted(demos(public)):
+            text += f"\n/projects/{demo}/*\n  ! Content-Security-Policy\n"
+        headers.write_text(text, encoding="utf-8")
         print(f"CSP: {len(scripts)} inline script hash(es), {len(styles)} inline style hash(es)")
 
     main("{{ public }}")
