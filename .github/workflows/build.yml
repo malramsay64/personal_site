@@ -28,6 +28,14 @@ jobs:
       - name: Build site
         run: zola build
 
+      - name: Check sitemap, feed and robots.txt
+        run: python3 scripts/check_site.py
+
+      - uses: $/.github/actions/setup-lychee
+
+      - name: Check internal links and anchors
+        run: scripts/check_links.sh
+
       - name: Check security.txt has not expired
         run: |
           expires=$(sed -n 's/^Expires: //p' static/.well-known/security.txt)

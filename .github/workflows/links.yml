@@ -1,0 +1,40 @@
+name: External links
+
+# Weekly check that external links in the built site still resolve. Kept out of
+# PR builds because external sites fail intermittently. A failed run emails the
+# repository owner.
+on:
+  schedule:
+    - cron: "41 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: external-links
+  cancel-in-progress: true
+
+jobs:
+  links:
+    name: Check external links
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+          persist-credentials: false
+
+      - uses: $/.github/actions/setup-zola
+
+      - name: Build site
+        run: zola build
+
+      - uses: $/.github/actions/setup-lychee
+
+      - name: Check links
+        env:
+          # Raises GitHub's rate limit for links to github.com.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: scripts/check_links.sh external

@@ -2,3 +2,4 @@
 public
 .wrangler
 __pycache__/
+.lighthouseci/

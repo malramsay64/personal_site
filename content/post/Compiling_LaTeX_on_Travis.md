@@ -356,5 +356,5 @@ install biber are below.
 [travis conditional deployment]: https://docs.travis-ci.com/user/deployment#Conditional-Releases-with-on%3A
 [phd-thesis]: https://github.com/malramsay64/phd-thesis
 [usyd-beamer-theme]: https://github.com/malramsay64/usyd-beamer-theme
-[.travis.yml]: /code/travis_latex/.travis.yml
-[Makefile]: /code/travis_latex/Makefile
+[.travis.yml]: /code/latex_travis/travis.yml
+[Makefile]: /code/latex_travis/Makefile

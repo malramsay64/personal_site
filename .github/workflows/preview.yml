@@ -72,6 +72,37 @@ jobs:
             gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"
           fi
 
+      # Scores the preview as served by Cloudflare, with the real headers and CSP.
+      # Thresholds are in .github/lighthouserc.json; the maths post also checks
+      # that KaTeX loads under the CSP (blocked resources lower Best Practices).
+      - name: Lighthouse
+        env:
+          PREVIEW_URL: ${{ steps.url.outputs.url }}
+        run: |
+          npx --yes @lhci/cli@0.15.1 autorun --config=.github/lighthouserc.json \
+            --collect.url="$PREVIEW_URL/" \
+            --collect.url="$PREVIEW_URL/post/" \
+            --collect.url="$PREVIEW_URL/post/docker-on-fedora/" \
+            --collect.url="$PREVIEW_URL/post/quaternions-in-md/"
+
+      - name: Lighthouse summary
+        if: always() && steps.url.outputs.url
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import glob, json, statistics
+          runs = {}
+          for f in glob.glob(".lighthouseci/lhr-*.json"):
+              r = json.load(open(f))
+              runs.setdefault(r["finalDisplayedUrl"], []).append(
+                  {k: v["score"] for k, v in r["categories"].items()})
+          cats = ["performance", "accessibility", "best-practices", "seo"]
+          print("| Page | " + " | ".join(cats) + " |")
+          print("|---|" + "---|" * len(cats))
+          for url, rs in sorted(runs.items()):
+              scores = [round(100 * statistics.median(r[c] for r in rs)) for c in cats]
+              print(f"| {url} | " + " | ".join(map(str, scores)) + " |")
+          PY
+
   cleanup:
     name: Delete preview
     if: >-
