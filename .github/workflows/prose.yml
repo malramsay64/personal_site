@@ -1,0 +1,77 @@
+name: Prose
+
+# Spelling and grammar check of changed Markdown, using a local LanguageTool
+# server (so drafts aren't sent to an external API). Findings on lines the PR
+# adds are posted as inline review comments with suggested fixes. They never
+# fail the check. Fork PRs can't post comments, so they get the findings in the
+# job log instead.
+#
+# Accepted words: .github/prose/words.txt
+# Disabled rules and Markdown handling: .github/prose/check.py
+on:
+  pull_request:
+    paths:
+      - "content/**.md"
+      - ".github/prose/**"
+      - ".github/workflows/prose.yml"
+
+permissions: {}
+
+concurrency:
+  group: prose-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Spelling and grammar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+      pull-requests: write # post review comments
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: List changed Markdown files
+        id: files
+        run: |
+          git diff --name-only --diff-filter=AM "$BASE_SHA"...HEAD -- 'content/**.md' > "$RUNNER_TEMP/files.txt"
+          cat "$RUNNER_TEMP/files.txt"
+          echo "count=$(wc -l < "$RUNNER_TEMP/files.txt")" >> "$GITHUB_OUTPUT"
+
+      - name: Start LanguageTool
+        if: steps.files.outputs.count != '0'
+        run: |
+          mvn -q -B -f .github/prose/pom.xml dependency:copy-dependencies -DoutputDirectory="$RUNNER_TEMP/languagetool"
+          java -cp "$RUNNER_TEMP/languagetool/*" org.languagetool.server.HTTPServer --port 8081 > "$RUNNER_TEMP/languagetool.log" 2>&1 &
+          for _ in $(seq 60); do
+            curl -fs -o /dev/null http://localhost:8081/v2/languages && exit 0
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/languagetool.log"
+          exit 1
+
+      - name: Install reviewdog
+        if: steps.files.outputs.count != '0'
+        run: |
+          GOBIN="$RUNNER_TEMP/bin" go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.21.2
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Check and report
+        if: steps.files.outputs.count != '0'
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          mapfile -t files < "$RUNNER_TEMP/files.txt"
+          if [[ $SAME_REPO == true ]]; then
+            reporter=(-reporter=github-pr-review)
+          else
+            reporter=(-reporter=local -diff="git diff $BASE_SHA...HEAD")
+          fi
+          python3 .github/prose/check.py "${files[@]}" \
+            | reviewdog -f=rdjsonl -name=LanguageTool "${reporter[@]}" -filter-mode=added -fail-level=none
