@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install Zola (version pinned in netlify.toml)
+        run: |
+          version=$(sed -n 's/^ZOLA_VERSION = "\(.*\)"/\1/p' netlify.toml)
+          curl -fsSL "https://github.com/getzola/zola/releases/download/v${version}/zola-v${version}-x86_64-unknown-linux-gnu.tar.gz" \
+            | tar xz -C /usr/local/bin
+          zola --version
+
+      - name: Build site
+        run: zola build
+
+      - name: Check security.txt has not expired
+        run: |
+          expires=$(sed -n 's/^Expires: //p' static/.well-known/security.txt)
+          if [[ $(date -u -d "$expires" +%s) -lt $(date -u +%s) ]]; then
+            echo "::error file=static/.well-known/security.txt::Expired on $expires"
+            exit 1
+          fi
