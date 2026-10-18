@@ -1,11 +1,13 @@
 # Commands for building and checking the site. Run `just` to list them.
 # CI runs these same recipes, so local runs and CI can't drift apart.
 #
-# Needs zola (version in netlify.toml), plus for the checks: lychee, harper-cli,
+# Needs zola (zola_version below), plus for the checks: lychee, harper-cli,
 # uv (zizmor), jq, and npx with Chrome (Lighthouse, Wrangler).
 
 set positional-arguments
 
+# Bumped monthly by scripts/maintenance.sh; CI installs this version.
+zola_version := "0.23.6"
 zizmor_version := "1.31.1"
 lhci_version := "0.15.1"
 wrangler_version := "4.151.1"
@@ -18,6 +20,7 @@ default:
 
 # Build the site into public/ and fill in its CSP; extra args go to zola build
 build *args:
+    @zola --version | grep -qx "zola {{ zola_version }}" || echo "warning: expected zola {{ zola_version }}, found $(zola --version)" >&2
     zola build "$@"
     python3 scripts/csp.py
 

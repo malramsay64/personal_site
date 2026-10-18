@@ -52,13 +52,16 @@ def lightense_hashes():
     return LIGHTENSE_STYLE_HASHES
 
 
+def demos(public):
+    """The project demos: third-party builds under /projects/<demo>/."""
+    return [p.name for p in (public / "projects").iterdir() if p.is_dir()]
+
+
 def pages(public):
+    skip = {("projects", demo) for demo in demos(public)}
     for path in public.rglob("*.html"):
-        rel = path.relative_to(public).parts
-        # The project demos are third-party builds and don't get this CSP.
-        if rel[0] == "projects" and len(rel) > 2:
-            continue
-        yield path
+        if path.relative_to(public).parts[:2] not in skip:
+            yield path
 
 
 def main(public="public"):
@@ -91,7 +94,11 @@ def main(public="public"):
     text = headers.read_text(encoding="utf-8")
     if PLACEHOLDER not in text:
         sys.exit(f"{headers}: no {PLACEHOLDER} placeholder (already filled in?)")
-    headers.write_text(text.replace(PLACEHOLDER, csp), encoding="utf-8")
+    text = text.replace(PLACEHOLDER, csp)
+    # The demos run third-party code that this policy would block.
+    for demo in sorted(demos(public)):
+        text += f"\n/projects/{demo}/*\n  ! Content-Security-Policy\n"
+    headers.write_text(text, encoding="utf-8")
     print(f"CSP: {len(scripts)} inline script hash(es), {len(styles)} inline style hash(es)")
 
 
