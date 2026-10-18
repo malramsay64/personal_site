@@ -16,9 +16,10 @@ worker := "malramsay-com"
 default:
     @just --list
 
-# Build the site into public/
-build:
-    zola build
+# Build the site into public/ and fill in its CSP; extra args go to zola build
+build *args:
+    zola build "$@"
+    python3 scripts/csp.py
 
 # Serve the site locally with live reload
 serve:
@@ -101,6 +102,7 @@ lighthouse *args:
     out=$(mktemp -d)
     trap 'kill $server 2>/dev/null; rm -rf "$out"' EXIT
     zola build --base-url "http://localhost:$port" --output-dir "$out/site" --force
+    python3 scripts/csp.py "$out/site"
     python3 -m http.server $port --directory "$out/site" > /dev/null 2>&1 &
     server=$!
     sleep 1
@@ -154,10 +156,10 @@ preview name message="":
     # The preview URL is only known once the preview exists, and Zola needs it
     # as the base URL. So upload once to get the URL, then rebuild and upload
     # again. Unchanged assets aren't re-uploaded, so the second pass is cheap.
-    zola build >&2
+    just build >&2
     url=$({{ wrangler }} preview --name "$1" --json | jq -r '.preview.urls[0]')
     [[ $url == https://* ]] || { echo "No preview URL returned" >&2; exit 1; }
-    zola build --base-url "$url" >&2
+    just build --base-url "$url" >&2
     {{ wrangler }} preview --name "$1" --message "$2" >&2
     echo "$url"
 

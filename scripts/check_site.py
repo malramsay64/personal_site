@@ -1,12 +1,15 @@
-"""Sanity checks on the built site: sitemap, feed and robots.txt.
+"""Sanity checks on the built site: sitemap, feed, robots.txt and assets.
 
 Usage: python3 scripts/check_site.py [public]
 
 Checks that every page is in the sitemap and every sitemap URL exists, that the
 blog feed is valid Atom with one entry per post, and that robots.txt points at
-the sitemap. Prints GitHub Actions error annotations and exits non-zero on failure.
+the sitemap. Also checks that pages only load scripts and styles from the site itself
+(as the CSP requires). Prints GitHub Actions error annotations and exits non-zero
+on failure.
 """
 
+import re
 import sys
 import tomllib
 import xml.etree.ElementTree as ET
@@ -87,6 +90,24 @@ def check_feed(public, base_url):
     print(f"feed.xml: {len(entries)} entries")
 
 
+def check_assets(public, base_url):
+    """Pages must only load scripts and styles from the site itself, and the
+    built _headers must have its CSP filled in (see scripts/csp.py)."""
+    asset = re.compile(r"<(?:script|link)\b[^>]*\b(?:src|href)=\"(https?://[^\"]+)\"[^>]*>")
+    for page in public.rglob("*.html"):
+        rel = page.relative_to(public)
+        if rel.parts[0] == "projects" and len(rel.parts) > 2:
+            continue
+        for m in asset.finditer(page.read_text(encoding="utf-8")):
+            tag, url = m.group(0), m.group(1)
+            if tag.startswith("<link") and not re.search(r'rel="(stylesheet|preload|modulepreload)"', tag):
+                continue
+            if not url.startswith(base_url):
+                error(f"{rel} loads {url} from another origin, which the CSP blocks")
+    if "__CSP__" in (public / "_headers").read_text():
+        error("_headers still has the CSP placeholder; build with `just build`")
+
+
 def check_robots(public, base_url):
     robots = (public / "robots.txt").read_text()
     if f"Sitemap: {base_url}/sitemap.xml" not in robots:
@@ -100,6 +121,7 @@ def main(public="public"):
     check_sitemap(public, base_url)
     check_feed(public, base_url)
     check_robots(public, base_url)
+    check_assets(public, base_url)
     if errors:
         sys.exit(f"{len(errors)} problem(s) found")
     print("Site checks passed")
