@@ -1,3 +1,4 @@
 # Generated html files
 public
 .wrangler
+__pycache__/
