@@ -26,15 +26,12 @@ jobs:
           submodules: true
           persist-credentials: false
 
+      - uses: $/.github/actions/setup-just
       - uses: $/.github/actions/setup-zola
-
-      - name: Build site
-        run: zola build
-
       - uses: $/.github/actions/setup-lychee
 
       - name: Check links
         env:
           # Raises GitHub's rate limit for links to github.com.
           GITHUB_TOKEN: ${{ github.token }}
-        run: scripts/check_links.sh external
+        run: just links-external

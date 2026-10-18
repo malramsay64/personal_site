@@ -36,25 +36,19 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - uses: $/.github/actions/setup-just
+
       - name: List changed Markdown files
         id: files
+        env:
+          PROSE_BASE: ${{ github.event.pull_request.base.sha }}
         run: |
-          git diff --name-only --diff-filter=AM "$BASE_SHA"...HEAD -- 'content/**.md' > "$RUNNER_TEMP/files.txt"
+          just prose-files > "$RUNNER_TEMP/files.txt"
           cat "$RUNNER_TEMP/files.txt"
           echo "count=$(wc -l < "$RUNNER_TEMP/files.txt")" >> "$GITHUB_OUTPUT"
 
-      - name: Install Harper
+      - uses: $/.github/actions/setup-harper
         if: steps.files.outputs.count != '0'
-        env:
-          HARPER_VERSION: v2.13.0
-          HARPER_SHA256: 3c2db5f53d374f7b3fe70200a6675f5ba43f01b3995974fb32a39e20237e914a
-        run: |
-          curl -fsSL -o "$RUNNER_TEMP/harper.tar.gz" \
-            "https://github.com/Automattic/harper/releases/download/$HARPER_VERSION/harper-cli-x86_64-unknown-linux-gnu.tar.gz"
-          echo "$HARPER_SHA256  $RUNNER_TEMP/harper.tar.gz" | sha256sum -c -
-          mkdir -p "$RUNNER_TEMP/bin"
-          tar xzf "$RUNNER_TEMP/harper.tar.gz" -C "$RUNNER_TEMP/bin" harper-cli
-          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
 
       - name: Install reviewdog
         if: steps.files.outputs.count != '0'
@@ -73,5 +67,5 @@ jobs:
           else
             reporter=(-reporter=local -diff="git diff $BASE_SHA...HEAD")
           fi
-          python3 .github/prose/harper.py "${files[@]}" \
+          just prose-json "${files[@]}" \
             | reviewdog -f=rdjsonl -name=Harper "${reporter[@]}" -filter-mode=added -fail-level=none

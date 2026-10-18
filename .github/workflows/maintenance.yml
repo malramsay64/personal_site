@@ -29,17 +29,20 @@ jobs:
           submodules: true
           persist-credentials: false
 
+      - uses: $/.github/actions/setup-just
+
       - name: Apply bumps
-        run: scripts/maintenance.sh | tee "$RUNNER_TEMP/summary.txt"
+        run: just maintenance | tee "$RUNNER_TEMP/summary.txt"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
       # PRs opened with GITHUB_TOKEN don't trigger other workflows,
       # so check the bumped site builds before opening the PR.
       - uses: $/.github/actions/setup-zola
+      - uses: $/.github/actions/setup-lychee
 
-      - name: Check the site still builds
-        run: zola build
+      - name: Check the site still builds and passes the checks
+        run: just ci
 
       - name: Open or update PR
         run: |

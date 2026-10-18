@@ -18,7 +18,6 @@ env:
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
   PREVIEW_NAME: pr-${{ github.event.pull_request.number }}
   HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-  WRANGLER: npx --yes wrangler@4.151.1
 
 jobs:
   deploy:
@@ -36,25 +35,14 @@ jobs:
           submodules: true
           persist-credentials: false
 
+      - uses: $/.github/actions/setup-just
       - uses: $/.github/actions/setup-zola
 
-      # The preview URL is only known once the preview exists, and Zola needs it
-      # as the base URL. So upload once to get the URL, then rebuild and upload
-      # again. Unchanged assets aren't re-uploaded, so the second pass is cheap.
-      - name: Get preview URL
+      - name: Build and upload preview
         id: url
         run: |
-          zola build
-          url=$($WRANGLER preview --name "$PREVIEW_NAME" --json | jq -r '.preview.urls[0]')
-          [[ $url == https://* ]] || { echo "::error::No preview URL returned"; exit 1; }
+          url=$(just preview "$PREVIEW_NAME" "$HEAD_SHA")
           echo "url=$url" >> "$GITHUB_OUTPUT"
-
-      - name: Build and upload preview
-        env:
-          PREVIEW_URL: ${{ steps.url.outputs.url }}
-        run: |
-          zola build --base-url "$PREVIEW_URL"
-          $WRANGLER preview --name "$PREVIEW_NAME" --message "$HEAD_SHA"
 
       - name: Comment preview URL
         env:
@@ -78,30 +66,11 @@ jobs:
       - name: Lighthouse
         env:
           PREVIEW_URL: ${{ steps.url.outputs.url }}
-        run: |
-          npx --yes @lhci/cli@0.15.1 autorun --config=.github/lighthouserc.json \
-            --collect.url="$PREVIEW_URL/" \
-            --collect.url="$PREVIEW_URL/post/" \
-            --collect.url="$PREVIEW_URL/post/docker-on-fedora/" \
-            --collect.url="$PREVIEW_URL/post/quaternions-in-md/"
+        run: just lighthouse-url "$PREVIEW_URL"
 
       - name: Lighthouse summary
         if: always() && steps.url.outputs.url
-        run: |
-          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
-          import glob, json, statistics
-          runs = {}
-          for f in glob.glob(".lighthouseci/lhr-*.json"):
-              r = json.load(open(f))
-              runs.setdefault(r["finalDisplayedUrl"], []).append(
-                  {k: v["score"] for k, v in r["categories"].items()})
-          cats = ["performance", "accessibility", "best-practices", "seo"]
-          print("| Page | " + " | ".join(cats) + " |")
-          print("|---|" + "---|" * len(cats))
-          for url, rs in sorted(runs.items()):
-              scores = [round(100 * statistics.median(r[c] for r in rs)) for c in cats]
-              print(f"| {url} | " + " | ".join(map(str, scores)) + " |")
-          PY
+        run: just lighthouse-summary >> "$GITHUB_STEP_SUMMARY"
 
   cleanup:
     name: Delete preview
@@ -109,9 +78,16 @@ jobs:
       github.event.action == 'closed' &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      contents: read # check out the repository for the justfile
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: $/.github/actions/setup-just
+
       - name: Delete preview
         run: |
-          $WRANGLER preview delete --worker-name malramsay-com --name "$PREVIEW_NAME" --skip-confirmation \
+          just preview-delete "$PREVIEW_NAME" \
             || echo "::warning::Could not delete preview $PREVIEW_NAME (it may not exist)"
