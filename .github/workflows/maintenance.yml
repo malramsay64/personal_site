@@ -1,53 +1,66 @@
 name: Maintenance
 
 # Monthly bumps of security.txt expiry, footer year and Zola version.
-# Opens a PR only when something changed.
+# Opens (or updates) a PR only when something changed.
 on:
   schedule:
     - cron: "17 3 1 * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
+
+concurrency:
+  group: maintenance
+  cancel-in-progress: false
 
 jobs:
   bump:
+    name: Apply bumps and open PR
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the automation/maintenance branch
+      pull-requests: write # open the PR
+    env:
+      BRANCH: automation/maintenance
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
+          persist-credentials: false
 
       - name: Apply bumps
-        id: bump
+        run: scripts/maintenance.sh | tee "$RUNNER_TEMP/summary.txt"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          {
-            echo 'summary<<EOF'
-            scripts/maintenance.sh
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
+          GITHUB_TOKEN: ${{ github.token }}
 
       # PRs opened with GITHUB_TOKEN don't trigger other workflows,
       # so check the bumped site builds before opening the PR.
-      - uses: ./.github/actions/setup-zola
+      - uses: $/.github/actions/setup-zola
 
       - name: Check the site still builds
         run: zola build
 
-      - uses: peter-evans/create-pull-request@v7
-        with:
-          branch: automation/maintenance
-          commit-message: "Routine maintenance bumps"
-          title: "Routine maintenance bumps"
-          body: |
-            Automated monthly bumps:
-
-            ```
-            ${{ steps.bump.outputs.summary }}
-            ```
-
-            Check the Netlify deploy preview before merging.
-          delete-branch: true
+      - name: Open or update PR
+        run: |
+          if git diff --quiet; then
+            echo "Nothing to bump"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git commit -am "Routine maintenance bumps"
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+          if [[ -z $(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number') ]]; then
+            {
+              echo "Automated monthly bumps:"
+              echo
+              echo '```'
+              cat "$RUNNER_TEMP/summary.txt"
+              echo '```'
+              echo
+              echo "Check the deploy preview before merging."
+            } > "$RUNNER_TEMP/body.md"
+            gh pr create --head "$BRANCH" --title "Routine maintenance bumps" --body-file "$RUNNER_TEMP/body.md"
+          fi
