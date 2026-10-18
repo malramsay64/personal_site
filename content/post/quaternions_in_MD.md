@@ -2,13 +2,11 @@
 title = "Quaternions for Orientation in MD"
 date = 2017-09-13
 
-math = true
-
 [taxonomies]
 tags = ["python", "maths"]
 
 [extra]
-katex = true
+math = true
 +++
 
 In the understanding of the dynamics of a molecule in a Molecular Dynamics (MD) Simulation

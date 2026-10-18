@@ -8,7 +8,7 @@ draft = false
 tags = ["phd", "research"]
 
 [extra]
-katex = true
+math = true
 +++
 
 Failure is one of those topics

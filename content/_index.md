@@ -1,5 +1,12 @@
 +++
-template = "about.html"
+template = "home.html"
+
+[extra]
+lang = "en"
+footer = true
+recent = true
+recent_max = 5
+recent_more_text = "more »"
 +++
 
 # About Me
