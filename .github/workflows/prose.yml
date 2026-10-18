@@ -1,13 +1,12 @@
 name: Prose
 
-# Spelling and grammar check of changed Markdown, using a local LanguageTool
-# server (so drafts aren't sent to an external API). Findings on lines the PR
-# adds are posted as inline review comments with suggested fixes. They never
-# fail the check. Fork PRs can't post comments, so they get the findings in the
-# job log instead.
+# Spelling and grammar check of changed Markdown with Harper, which runs locally
+# so drafts aren't sent to an external API. Findings on lines the PR adds are
+# posted as inline review comments with suggested fixes. They never fail the
+# check. Fork PRs can't post comments, so they get the findings in the job log.
 #
-# Accepted words: .github/prose/words.txt
-# Disabled rules and Markdown handling: .github/prose/check.py
+# Accepted words: .github/prose/dictionary.txt
+# Ignored rules and dialect: .github/prose/harper.py
 on:
   pull_request:
     paths:
@@ -44,17 +43,18 @@ jobs:
           cat "$RUNNER_TEMP/files.txt"
           echo "count=$(wc -l < "$RUNNER_TEMP/files.txt")" >> "$GITHUB_OUTPUT"
 
-      - name: Start LanguageTool
+      - name: Install Harper
         if: steps.files.outputs.count != '0'
+        env:
+          HARPER_VERSION: v2.13.0
+          HARPER_SHA256: 3c2db5f53d374f7b3fe70200a6675f5ba43f01b3995974fb32a39e20237e914a
         run: |
-          mvn -q -B -f .github/prose/pom.xml dependency:copy-dependencies -DoutputDirectory="$RUNNER_TEMP/languagetool"
-          java -cp "$RUNNER_TEMP/languagetool/*" org.languagetool.server.HTTPServer --port 8081 > "$RUNNER_TEMP/languagetool.log" 2>&1 &
-          for _ in $(seq 60); do
-            curl -fs -o /dev/null http://localhost:8081/v2/languages && exit 0
-            sleep 1
-          done
-          cat "$RUNNER_TEMP/languagetool.log"
-          exit 1
+          curl -fsSL -o "$RUNNER_TEMP/harper.tar.gz" \
+            "https://github.com/Automattic/harper/releases/download/$HARPER_VERSION/harper-cli-x86_64-unknown-linux-gnu.tar.gz"
+          echo "$HARPER_SHA256  $RUNNER_TEMP/harper.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/bin"
+          tar xzf "$RUNNER_TEMP/harper.tar.gz" -C "$RUNNER_TEMP/bin" harper-cli
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
 
       - name: Install reviewdog
         if: steps.files.outputs.count != '0'
@@ -73,5 +73,5 @@ jobs:
           else
             reporter=(-reporter=local -diff="git diff $BASE_SHA...HEAD")
           fi
-          python3 .github/prose/check.py "${files[@]}" \
-            | reviewdog -f=rdjsonl -name=LanguageTool "${reporter[@]}" -filter-mode=added -fail-level=none
+          python3 .github/prose/harper.py "${files[@]}" \
+            | reviewdog -f=rdjsonl -name=Harper "${reporter[@]}" -filter-mode=added -fail-level=none

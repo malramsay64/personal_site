@@ -15,10 +15,3 @@ updates:
     cooldown:
       default-days: 7
 
-  # LanguageTool for the prose check
-  - package-ecosystem: maven
-    directory: /.github/prose
-    schedule:
-      interval: monthly
-    cooldown:
-      default-days: 7
