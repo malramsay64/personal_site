@@ -1,6 +1,7 @@
 """Check Markdown files with harper-cli and print reviewdog rdjsonl.
 
 Usage: python3 harper.py FILE... | reviewdog -f=rdjsonl ...
+       python3 harper.py --text FILE...   (readable output, for local use)
 
 Harper parses Markdown itself (skipping code and links), but not LaTeX maths or
 Tera, so lints inside those are dropped here.
@@ -93,7 +94,13 @@ def lint(path):
         sys.exit(f"harper-cli failed on {path}:\n{result.stderr}")
 
 
-def main(paths):
+def as_text(d):
+    start = d["location"]["range"]["start"]
+    fix = f" (suggest: {d['suggestions'][0]['text']!r})" if "suggestions" in d else ""
+    return f"{d['location']['path']}:{start['line']}:{start['column']}: {d['code']['value']}: {d['message']}{fix}"
+
+
+def main(paths, text_output=False):
     words = load_dictionary()
     for path in paths:
         with open(path, encoding="utf-8") as f:
@@ -119,8 +126,10 @@ def main(paths):
                 if item["suggestions"] and (s := suggestion(text, start, end, item["suggestions"][0])):
                     rng = {"start": position(text, s["start"]), "end": position(text, s["end"])}
                     diagnostic["suggestions"] = [{"range": rng, "text": s["text"]}]
-                print(json.dumps(diagnostic))
+                print(as_text(diagnostic) if text_output else json.dumps(diagnostic))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    args = sys.argv[1:]
+    text_output = bool(args) and args[0] == "--text"
+    main(args[1:] if text_output else args, text_output)

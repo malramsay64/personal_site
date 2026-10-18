@@ -1,5 +1,5 @@
 # Cloudflare Workers static assets deploy of the built Zola site.
-# Deployed from .github/workflows/build.yml on pushes to main.
+# Deployed from .github/workflows/build.yml on pushes to the default branch (master).
 name = "malramsay-com"
 compatibility_date = "2026-10-01"
 

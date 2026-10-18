@@ -73,8 +73,8 @@ jobs:
           fi
 
       # Scores the preview as served by Cloudflare, with the real headers and CSP.
-      # Thresholds are in .github/lighthouserc.json; the maths post also checks
-      # that KaTeX loads under the CSP (blocked resources lower Best Practices).
+      # Thresholds are in .github/lighthouserc.json. Any browser console error
+      # fails it, which catches the CSP blocking KaTeX on the maths post.
       - name: Lighthouse
         env:
           PREVIEW_URL: ${{ steps.url.outputs.url }}
