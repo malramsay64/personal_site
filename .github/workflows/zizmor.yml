@@ -1,0 +1,34 @@
+name: zizmor
+
+# Static analysis of the GitHub Actions workflows.
+on:
+  push:
+    paths: [".github/**"]
+  pull_request:
+    paths: [".github/**"]
+
+permissions: {}
+
+concurrency:
+  group: zizmor-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zizmor:
+    name: Audit workflows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: $/.github/actions/setup-just
+      - uses: $/.github/actions/setup-uv
+
+      - name: Run zizmor
+        env:
+          # Enables the online audits, e.g. known-vulnerable actions and impostor commits.
+          GH_TOKEN: ${{ github.token }}
+        run: just zizmor --format=github

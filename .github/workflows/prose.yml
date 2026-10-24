@@ -1,0 +1,71 @@
+name: Prose
+
+# Spelling and grammar check of changed Markdown with Harper, which runs locally
+# so drafts aren't sent to an external API. Findings on lines the PR adds are
+# posted as inline review comments with suggested fixes. They never fail the
+# check. Fork PRs can't post comments, so they get the findings in the job log.
+#
+# Accepted words: .github/prose/dictionary.txt
+# Ignored rules and dialect: .github/prose/harper.py
+on:
+  pull_request:
+    paths:
+      - "content/**.md"
+      - ".github/prose/**"
+      - ".github/workflows/prose.yml"
+
+permissions: {}
+
+concurrency:
+  group: prose-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Spelling and grammar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+      pull-requests: write # post review comments
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: $/.github/actions/setup-just
+
+      - name: List changed Markdown files
+        id: files
+        env:
+          PROSE_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          just prose-files > "$RUNNER_TEMP/files.txt"
+          cat "$RUNNER_TEMP/files.txt"
+          echo "count=$(wc -l < "$RUNNER_TEMP/files.txt")" >> "$GITHUB_OUTPUT"
+
+      - uses: $/.github/actions/setup-harper
+        if: steps.files.outputs.count != '0'
+
+      - name: Install reviewdog
+        if: steps.files.outputs.count != '0'
+        run: |
+          GOBIN="$RUNNER_TEMP/bin" go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.21.2
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Check and report
+        if: steps.files.outputs.count != '0'
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          mapfile -t files < "$RUNNER_TEMP/files.txt"
+          if [[ $SAME_REPO == true ]]; then
+            reporter=(-reporter=github-pr-review)
+          else
+            reporter=(-reporter=local -diff="git diff $BASE_SHA...HEAD")
+          fi
+          just prose-json "${files[@]}" \
+            | reviewdog -f=rdjsonl -name=Harper "${reporter[@]}" -filter-mode=added -fail-level=none

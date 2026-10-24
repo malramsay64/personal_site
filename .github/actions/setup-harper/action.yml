@@ -1,0 +1,15 @@
+name: Setup Harper
+description: Install the harper-cli grammar checker
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        HARPER_VERSION: v2.13.0
+        HARPER_SHA256: 3c2db5f53d374f7b3fe70200a6675f5ba43f01b3995974fb32a39e20237e914a
+      run: |
+        curl -fsSL -o "$RUNNER_TEMP/harper.tar.gz" \
+          "https://github.com/Automattic/harper/releases/download/$HARPER_VERSION/harper-cli-x86_64-unknown-linux-gnu.tar.gz"
+        echo "$HARPER_SHA256  $RUNNER_TEMP/harper.tar.gz" | sha256sum -c -
+        sudo tar xzf "$RUNNER_TEMP/harper.tar.gz" -C /usr/local/bin harper-cli
+        harper-cli --version

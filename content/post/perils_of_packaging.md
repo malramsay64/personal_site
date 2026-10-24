@@ -1,5 +1,6 @@
 +++
 title = "The Perils of Packaging in Python"
+description = "The pitfalls that the standard guides to packaging a Python application don't cover."
 date = 2018-01-07
 
 draft = false
@@ -317,7 +318,7 @@ requirements:
   build:
     - python 3.6.1
   run:
-    - python {{ pin_compatible('python', max_pin='x.x.x') }}
+    - python {% raw %}{{ pin_compatible('python', max_pin='x.x.x') }}{% endraw %}
 
 build: number: 0
 test:

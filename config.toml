@@ -1,44 +1,72 @@
-# The URL the site will be built for
 base_url = "https://malramsay.com"
-
-# Whether to automatically compile all Sass files in the sass directory
+title = "Malcolm Ramsay"
+description = "Data scientist writing about Python, data analysis and research software."
+default_language = "en"
+theme = "serene"
+output_dir = "public"
 compile_sass = true
+minify_html = false
+build_search_index = false
+generate_feeds = false
+feed_filenames = ["feed.xml"]
+taxonomies = [{ name = "tags" }]
 
-# Whether to do syntax highlighting
-# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
-highlight_code = true
-highlight_theme = "inspired-github"
+[markdown]
+render_emoji = false
+external_links_target_blank = false
+external_links_no_follow = true
+external_links_no_referrer = true
+smart_punctuation = false
+github_alerts = true
 
-# Whether to build a search index to be used later on by a JavaScript library
-build_search_index = true
+[markdown.highlighting]
+style = "class"
+light_theme = "github-light"
+dark_theme = "github-dark"
 
-theme = "tale-zola"
-
-title="Malcolm Ramsay"
-generate_feed=true
-
-taxonomies = [
-    { name = "tags" },
-]
+[slugify]
+paths = "on"
+taxonomies = "on"
+anchors = "on"
 
 [extra]
-# Put all your custom variables here
-author = "Malcolm Ramsay"
-github = "https://github.com/malramsay64"
-email  = "m@malramsay.com"
-
-timeformat = "%Y-%m-%d"
-
-menu = [
-{ name = "Home", url = "/" },
-{ name = "Blog", url = "/post/" },
-{ name = "Talks", url = "/talks/" },
-{ name = "Projects", url = "/projects/" },
-# { name = "Publications", url = "/publication/" },
+nav = [
+  { name = "blog", path = "/post" },
+  { name = "talks", path = "/talks" },
+  { name = "projects", path = "/projects" },
+  { name = "tags", path = "/tags" },
+  { name = "github", path = "https://github.com/malramsay64" },
 ]
 
-[extra.footer]
-start_year = "2017"  # start year of the site
-end_year = "2021"    # end year of the site
-info = ""
+name = "Malcolm Ramsay"
+links = [
+  { name = "GitHub", icon = "github", url = "https://github.com/malramsay64" },
+  { name = "LinkedIn", icon = "linkedin", url = "https://linkedin.com/in/malramsay64" },
+  { name = "Email", icon = "email", url = "mailto:m@malramsay.com" },
+]
+blog_section_path = "/post"
+og_image = "img/og.png"
 
+back_link_text = "Back"
+color_scheme = "auto"
+
+footer_copyright = "© 2017–2026 Malcolm Ramsay"
+footer_credits = true
+
+not_found_error_text = "404 Not Found"
+not_found_recover_text = "« back to home »"
+
+date_format = "%Y-%m-%d"
+toc = false
+code_copy = true
+comment = false
+math = false
+mermaid = false
+outdated_alert = false
+outdated_alert_days = 120
+outdated_alert_text_before = "This article was last updated "
+outdated_alert_text_after = " days ago and may be out of date."
+
+reaction = false
+reaction_align = "right"
+reaction_endpoint = ""

@@ -1,5 +1,6 @@
 +++
 title = "A guide to setting up remote SSH"
+description = "Setting up secure remote SSH access to a Linux workstation."
 date = 2018-04-09
 
 draft = false

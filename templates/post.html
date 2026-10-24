@@ -1,0 +1,17 @@
+{% extends "serene/templates/post.html" %}
+
+{#- Same as serene's head block, but loads KaTeX from /katex/ (self-hosted, same
+    files and integrity hashes as serene's CDN links) so the CSP can stay 'self'. -#}
+{% block head %}
+{% if config.markdown.highlighting.style == "class" %}
+<link id="hl" rel="stylesheet" type="text/css" href="/giallo-{% if color_scheme == "dark" %}dark{% else %}light{% endif %}.css" />
+{% endif %}
+{% set enable_math = page.extra.math if page.extra.math is defined else (section.extra.math if section.extra.math is defined else (config.extra.math if config.extra.math is defined else false)) %}
+{% if enable_math %}
+<link rel="stylesheet" href="{{ get_url(path='katex/katex.min.css') }}" integrity="sha384-M59ezskvvpvT+a+C1x088YJ3DVmK+wZdX0UkVKalOI4Qi5Nwv0WrvpqHcfa2HQqB">
+<script defer src="{{ get_url(path='katex/katex.min.js') }}" integrity="sha384-7jGyG5zFwmEamqNWdCbpsPn+GTWEis3lnV7X/jXHyhFpJG7ExABLyMapabg8F4+p"></script>
+<script defer src="{{ get_url(path='katex/contrib/auto-render.min.js') }}" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz"></script>
+<script defer src="{{ get_url(path='katex/contrib/copy-tex.min.js') }}" integrity="sha384-Pe2JWbaShhSRT0SESJ9XLPeAsi4yrNi7r/CiH0Coq7giBjK5a6Ae7XcybE8rNlQP"></script>
+<script defer src="{{ get_url(path='js/katex-render.js') }}"></script>
+{% endif %}
+{% endblock head %}

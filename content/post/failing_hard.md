@@ -1,5 +1,6 @@
 +++
 title = "Failing Hard: How I 'lost' two years of data"
+description = "The story of how I 'lost' two years of PhD data, and the lessons I learnt about managing research data."
 date = 2018-11-22
 
 draft = false
@@ -8,7 +9,7 @@ draft = false
 tags = ["phd", "research"]
 
 [extra]
-katex = true
+math = true
 +++
 
 Failure is one of those topics

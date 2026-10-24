@@ -1,9 +1,10 @@
 +++
 title="Optimising the Learning Experience for Researchers at all Levels"
+description = "How Intersect structures programming training for researchers at every level of experience."
 date = 2020-10-22
 +++
 
-{{ youtube(id="fgVt0z-ttjI") }}
+{{ <youtube id="fgVt0z-ttjI" /> }}
 
 Since Intersect incorporated programming languages into our researcher training catalogue, we have seen a continuing and rapid increase in demand for courses in Python, R, MATLAB and Julia. In 2019, we trained more than 2100 researchers in programming courses alone, using the Carpentries material as a basis and complemented by Intersect’s own courses.
 

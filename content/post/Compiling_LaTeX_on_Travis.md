@@ -1,5 +1,6 @@
 +++
 title = "Compiling LaTeX on Travis-CI"
+description = "Using Travis-CI to automatically compile LaTeX documents and publish the PDFs whenever you push."
 date = 2018-07-16
 
 draft = false
@@ -154,7 +155,7 @@ more detail in the rest of this document.
 3. Once signed in to Travis CI, go to your profile page and enable the repository you want to
    build.
 4. Create a `.travis.yml` file in the repository which tells Travis CI what to do. What you need
-   to put in the file is addressed [below]({{<ref "#travis.yml" >}}).
+   to put in the file is addressed [below](#travis.yml).
 5. Commit the `.travis.yml` file to the repository and push to GitHub. Travis will see the commit
    and start the build process.
 6. Any further commits to the repository, whether to the master branch, other branches, tags, or
@@ -355,5 +356,5 @@ install biber are below.
 [travis conditional deployment]: https://docs.travis-ci.com/user/deployment#Conditional-Releases-with-on%3A
 [phd-thesis]: https://github.com/malramsay64/phd-thesis
 [usyd-beamer-theme]: https://github.com/malramsay64/usyd-beamer-theme
-[.travis.yml]: /code/travis_latex/.travis.yml
-[Makefile]: /code/travis_latex/Makefile
+[.travis.yml]: /code/latex_travis/travis.yml
+[Makefile]: /code/latex_travis/Makefile

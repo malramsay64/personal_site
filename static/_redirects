@@ -1,0 +1,5 @@
+# Old tale-zola feed location
+/atom.xml /post/feed.xml 301
+
+# Old tale-zola pagination
+/post/page/* /post/ 301
