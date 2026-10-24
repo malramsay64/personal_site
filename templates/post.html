@@ -1,8 +1,12 @@
 {% extends "serene/templates/post.html" %}
 
 {#- Same as serene's head block, but loads KaTeX from /katex/ (self-hosted, same
-    files and integrity hashes as serene's CDN links) so the CSP can stay 'self'. -#}
+    files and integrity hashes as serene's CDN links) so the CSP can stay 'self',
+    and points at this page's raw-Markdown counterpart (see the `llms` recipe in
+    justfile, which reads zola-source to know which content file to mirror). -#}
 {% block head %}
+<link rel="alternate" type="text/markdown" title="Markdown source" href="{{ page.permalink }}index.md">
+<meta name="zola-source" content="{{ page.relative_path }}">
 {% if config.markdown.highlighting.style == "class" %}
 <link id="hl" rel="stylesheet" type="text/css" href="/giallo-{% if color_scheme == "dark" %}dark{% else %}light{% endif %}.css" />
 {% endif %}

@@ -14,3 +14,10 @@
   Cross-Origin-Resource-Policy: same-origin
   Cross-Origin-Embedder-Policy: credentialless
   Content-Security-Policy: __CSP__
+
+# Workers' default MIME map doesn't know .md; serve it as Markdown rather
+# than falling back to application/octet-stream (see the `llms` recipe).
+/*/index.md
+  Content-Type: text/markdown; charset=utf-8
+/llms.txt
+  Content-Type: text/markdown; charset=utf-8

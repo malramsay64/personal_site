@@ -25,6 +25,7 @@ build *args:
     @zola --version | grep -qx "zola {{ zola_version }}" || echo "warning: expected zola {{ zola_version }}, found $(zola --version)" >&2
     zola build "$@"
     just csp
+    just llms
 
 # Serve the site locally with live reload
 serve:
@@ -129,6 +130,68 @@ csp public="public":
             text += f"\n/projects/{demo}/*\n  ! Content-Security-Policy\n"
         headers.write_text(text, encoding="utf-8")
         print(f"CSP: {len(scripts)} inline script hash(es), {len(styles)} inline style hash(es)")
+
+    main("{{ public }}")
+
+# Mirror each post/talk/publication as raw Markdown next to its index.html, and
+# write an llms.txt index, so AI agents can read the site without an HTML parser.
+llms public="public":
+    #!/usr/bin/env -S uv run --script
+    # /// script
+    # requires-python = ">=3.11"
+    # dependencies = []
+    # ///
+    # Pages are found by their zola-source <meta> tag (set in templates/post.html),
+    # which names the content file relative to content/ that rendered them. Only
+    # pages using that template (post, talks and publication entries) carry the
+    # tag, so section listings and the home page are skipped automatically.
+    import re, tomllib
+    from pathlib import Path
+
+    SOURCE_META = re.compile(r'<meta name="zola-source" content="([^"]+)">')
+
+    def front_matter(text):
+        if not text.startswith("+++"):
+            return {}, text
+        end = text.index("\n+++", 3)
+        front = tomllib.loads(text[3:end])
+        return front, text[end + 4 :].lstrip("\n")
+
+    def main(public="public"):
+        public = Path(public)
+        with open("config.toml", "rb") as f:
+            site = tomllib.load(f)
+        base_url = site["base_url"].rstrip("/")
+
+        sections = {}
+        for html_path in sorted(public.rglob("index.html")):
+            match = SOURCE_META.search(html_path.read_text(encoding="utf-8"))
+            if not match:
+                continue
+            src = Path("content") / match.group(1)
+            front, body = front_matter(src.read_text(encoding="utf-8"))
+            (html_path.parent / "index.md").write_text(body, encoding="utf-8")
+
+            section = match.group(1).split("/", 1)[0]
+            url = f"{base_url}/{html_path.parent.relative_to(public)}/"
+            sections.setdefault(section, []).append((front.get("date"), front.get("title", ""), front.get("description", ""), url))
+
+        lines = [f"# {site['title']}", "", f"> {site['description']}", ""]
+        for section in ("post", "talks", "publication"):
+            pages = sections.get(section)
+            if not pages:
+                continue
+            lines += [f"## {section.capitalize()}", ""]
+            for _, title, description, url in sorted(pages, reverse=True):
+                entry = f"- [{title}]({url})"
+                if description:
+                    entry += f": {description}"
+                lines.append(entry)
+            lines.append("")
+        (public / "llms.txt").write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+
+        mirrored = sum(len(v) for v in sections.values())
+        print(f"llms: mirrored {mirrored} page(s) as Markdown, wrote llms.txt")
 
     main("{{ public }}")
 
