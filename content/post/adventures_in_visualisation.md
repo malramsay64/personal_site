@@ -1,5 +1,6 @@
 +++
 title = "Adventures in the Python Visualisation Landscape"
+description = "A tour of the fragmented Python visualisation landscape, and why I settled on Altair."
 date = 2018-03-17
 
 draft = false

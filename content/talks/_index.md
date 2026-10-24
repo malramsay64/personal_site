@@ -1,7 +1,16 @@
 +++
-template = "index.html"
+title = "Talks"
 sort_by = "date"
-paginate_by = 10
+template = "posts.html"
+page_template = "post.html"
+insert_anchor_links = "right"
+generate_feeds = false
+
+[extra]
+lang = "en"
+title = "Talks"
+subtitle = "Talks and webinars on data science, Python and research training"
+categorized = false
+back_to_top = true
 +++
 
-# Talks

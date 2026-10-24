@@ -1,5 +1,6 @@
 +++
 title = "A Workflow for Data Science"
+description = "A workflow for data science that combines Jupyter notebooks with reusable, tested Python code."
 date = 2021-06-29
 
 draft = false
@@ -247,6 +248,6 @@ How far we go depends heavily on the type of project being undertaken
 and the tools we want to use.
 
 [i dont like notebooks]: https://www.youtube.com/watch?v=7jiPeIFXb6U
-[gapminder_data]: "https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv"
+[gapminder_data]: https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv
 [pypa user guide]: https://packaging.python.org/
 [conda user guide]: https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/index.html

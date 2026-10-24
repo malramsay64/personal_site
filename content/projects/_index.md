@@ -1,6 +1,10 @@
 +++
 title = "Projects"
-date = 2020-11-30
+template = "prose.html"
+insert_anchor_links = "none"
+
+[extra]
+lang = "en"
 +++
 
 ## [Web Assembly for Visualisation](packing_wasm)

@@ -1,5 +1,6 @@
 +++
 title = "Updating Query with Soft Delete for SQLAlchemy 1.4"
+description = "Implementing soft delete for queries in SQLAlchemy 1.4 so deleted rows are hidden but kept."
 date = 2021-03-31
 
 draft = false

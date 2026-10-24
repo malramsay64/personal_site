@@ -1,5 +1,6 @@
 +++
 title= "Handling Exceptions in Numerical Python"
+description = "Catching and handling floating point errors and warnings in NumPy, SciPy and Pandas."
 date = 2020-10-19
 
 draft = false

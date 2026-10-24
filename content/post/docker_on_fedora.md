@@ -1,5 +1,6 @@
 +++
 title = "A Complete Guide to Docker on Fedora"
+description = "A complete guide to installing and configuring Docker on Fedora so that it is actually usable."
 date = 2018-09-02
 
 draft = false
@@ -76,10 +77,10 @@ sudo systemctl start docker
 
 ## Setting Permissions
 
-{% warning() %}
+{% <warning> %}
 This section has the potential to break things which are difficult to fix.
 Please be really careful, unlike me.
-{% end %}
+{% </warning> %}
 
 This follows the optional [post installation][docker post-install] steps in the Docker documentation.
 
@@ -112,13 +113,13 @@ The final step is adding yourself and/or any other users to the Docker group.
 This is done with the command
 
 
-{% warning() %}
+{% <warning> %}
 Running the below command without append
 will remove you from the `wheel` group
 meaning you will no longer be able to run commands with `sudo`.
 If you are the only user with root access
 you will have to repair your install from a live image.
-{% end %}
+{% </warning> %}
 
 ```sh
 sudo usermod --append --groups docker $USER

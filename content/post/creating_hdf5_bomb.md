@@ -1,5 +1,6 @@
 +++
 title = "Creating an HDF5 Bomb"
+description = "How a small HDF5 file can decompress into an enormous dataset, and what that means for reading untrusted files."
 date = 2018-03-15
 
 draft = false

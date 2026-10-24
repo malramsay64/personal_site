@@ -1,5 +1,6 @@
 +++
 title = "Distributing a Hoomd Plugin"
+description = "Packaging and distributing a compiled plugin for the Hoomd molecular dynamics package."
 date = 2018-06-03
 
 draft = false

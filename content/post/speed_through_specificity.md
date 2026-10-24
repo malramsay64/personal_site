@@ -1,5 +1,6 @@
 +++
 title = "Speed Through Specificity"
+description = "Why Python can be fast: speeding up code by choosing the right specialised tools."
 date = 2018-08-07
 
 draft = false

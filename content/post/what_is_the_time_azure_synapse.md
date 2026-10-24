@@ -1,5 +1,6 @@
 +++
 title = "What's the time Azure Synapse"
+description = "Working around the deficiencies in handling dates and times in Azure Synapse."
 date = 2022-02-07
 
 draft = false
