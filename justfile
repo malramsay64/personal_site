@@ -1,12 +1,14 @@
-# Commands for building and checking the site. Run `just` to list them.
-# CI runs these same recipes, so local runs and CI can't drift apart.
+# Commands for building and checking the site, and for maintaining it.
+# CI runs these same recipes, so local runs and CI can't drift apart. Every
+# script this repo needs lives here rather than in a separate scripts/ dir.
 #
-# Needs zola (zola_version below), plus for the checks: lychee, harper-cli,
-# uv (zizmor), jq, and npx with Chrome (Lighthouse, Wrangler).
+# Needs zola (zola_version below) and uv (runs the Python recipes below, and
+# zizmor), plus for the checks: lychee, harper-cli, jq, and npx with Chrome
+# (Lighthouse, Wrangler).
 
 set positional-arguments
 
-# Bumped monthly by scripts/maintenance.sh; CI installs this version.
+# Bumped monthly by the `maintenance` recipe below; CI installs this version.
 zola_version := "0.23.6"
 zizmor_version := "1.31.1"
 lhci_version := "0.15.1"
@@ -24,9 +26,26 @@ build *args:
     zola build "$@"
     just csp
 
+# Serve the site locally with live reload
+serve:
+    zola serve
+
+# Checks run by the CI build on every push
+ci: build check-site links check-security-txt
+
+# Everything in `ci`, plus zizmor
+check: ci zizmor
+
 # Fill in the Content-Security-Policy in a built site's _headers (run after every `zola build`)
 csp public="public":
-    #!/usr/bin/env python3
+    #!/usr/bin/env -S uv run --script
+    # /// script
+    # requires-python = ">=3.11"
+    # dependencies = []
+    # ///
+    # Allows only the site's own origin, plus the hash of each inline
+    # <script>, <style> and style="" attribute in the built pages, so no
+    # 'unsafe-inline' is needed.
     import base64, hashlib, html, re, sys
     from pathlib import Path
 
@@ -113,27 +132,166 @@ csp public="public":
 
     main("{{ public }}")
 
-# Serve the site locally with live reload
-serve:
-    zola serve
+# Sanity checks on a built site: sitemap, feed, robots.txt and assets
+check-site public="public":
+    #!/usr/bin/env -S uv run --script
+    # /// script
+    # requires-python = ">=3.11"
+    # dependencies = []
+    # ///
+    # Checks that every page is in the sitemap and every sitemap URL exists,
+    # that the blog feed is valid Atom with one entry per post, that
+    # robots.txt points at the sitemap, and that pages only load scripts and
+    # styles from the site itself (as the CSP requires).
+    import re, sys, tomllib, xml.etree.ElementTree as ET
+    from datetime import datetime
+    from pathlib import Path
 
-# Checks run by the CI build on every push
-ci: build check-site links check-security-txt
+    ATOM = "{http://www.w3.org/2005/Atom}"
+    SITEMAP = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 
-# Everything in `ci`, plus zizmor
-check: ci zizmor
+    errors = []
 
-# Check sitemap, feed and robots.txt in the built site
-check-site:
-    python3 scripts/check_site.py
+    def error(message):
+        errors.append(message)
+        print(f"::error::{message}")
+
+    def url_to_path(public, base_url, url):
+        if not url.startswith(base_url):
+            return None
+        path = public / url[len(base_url) :].lstrip("/")
+        return path / "index.html" if url.endswith("/") or path.is_dir() else path
+
+    def parse(path):
+        try:
+            return ET.parse(path).getroot()
+        except (ET.ParseError, FileNotFoundError) as e:
+            error(f"{path}: {e}")
+            return None
+
+    def check_sitemap(public, base_url):
+        root = parse(public / "sitemap.xml")
+        if root is None:
+            return
+        urls = [loc.text.strip() for loc in root.iter(f"{SITEMAP}loc")]
+        for url in urls:
+            path = url_to_path(public, base_url, url)
+            if path is None or not path.exists():
+                error(f"sitemap.xml lists {url}, which isn't in the built site")
+        listed = {url_to_path(public, base_url, u) for u in urls}
+        for section in ("post", "talks", "publication"):
+            for page in (public / section).glob("*/index.html"):
+                if page.parent.name != "page" and page not in listed:
+                    error(f"{page.relative_to(public)} is missing from sitemap.xml")
+        print(f"sitemap.xml: {len(urls)} URLs")
+
+    def check_feed(public, base_url):
+        feed = public / "post" / "feed.xml"
+        root = parse(feed)
+        if root is None:
+            return
+        if root.tag != f"{ATOM}feed":
+            error(f"{feed}: root element is {root.tag}, expected an Atom feed")
+            return
+        entries = root.findall(f"{ATOM}entry")
+        posts = [p for p in (public / "post").glob("*/index.html") if p.parent.name != "page"]
+        if len(entries) != len(posts):
+            error(f"{feed}: {len(entries)} entries but {len(posts)} posts")
+        for entry in entries:
+            title = entry.findtext(f"{ATOM}title", "").strip()
+            link = entry.find(f"{ATOM}link")
+            href = link.get("href", "") if link is not None else ""
+            if not title:
+                error(f"{feed}: entry without a title ({href})")
+            path = url_to_path(public, base_url, href)
+            if path is None or not path.exists():
+                error(f"{feed}: entry '{title}' links to {href}, which isn't in the built site")
+            for tag in ("updated", "published"):
+                value = entry.findtext(f"{ATOM}{tag}")
+                if value is not None:
+                    try:
+                        datetime.fromisoformat(value)
+                    except ValueError:
+                        error(f"{feed}: entry '{title}' has an invalid {tag} date {value!r}")
+        print(f"feed.xml: {len(entries)} entries")
+
+    def check_assets(public, base_url):
+        """Pages must only load scripts and styles from the site itself, and the
+        built _headers must have its CSP filled in (see the `csp` recipe)."""
+        asset = re.compile(r"<(?:script|link)\b[^>]*\b(?:src|href)=\"(https?://[^\"]+)\"[^>]*>")
+        for page in public.rglob("*.html"):
+            rel = page.relative_to(public)
+            if rel.parts[0] == "projects" and len(rel.parts) > 2:
+                continue
+            for m in asset.finditer(page.read_text(encoding="utf-8")):
+                tag, url = m.group(0), m.group(1)
+                if tag.startswith("<link") and not re.search(r'rel="(stylesheet|preload|modulepreload)"', tag):
+                    continue
+                if not url.startswith(base_url):
+                    error(f"{rel} loads {url} from another origin, which the CSP blocks")
+        if "__CSP__" in (public / "_headers").read_text():
+            error("_headers still has the CSP placeholder; build with `just build`")
+
+    def check_robots(public, base_url):
+        robots = (public / "robots.txt").read_text()
+        if f"Sitemap: {base_url}/sitemap.xml" not in robots:
+            error("robots.txt doesn't point at the sitemap")
+
+    def main(public="public"):
+        public = Path(public)
+        with open("config.toml", "rb") as f:
+            base_url = tomllib.load(f)["base_url"].rstrip("/")
+        check_sitemap(public, base_url)
+        check_feed(public, base_url)
+        check_robots(public, base_url)
+        check_assets(public, base_url)
+        if errors:
+            sys.exit(f"{len(errors)} problem(s) found")
+        print("Site checks passed")
+
+    main("{{ public }}")
 
 # Check internal links and anchors in the built site
 links:
-    scripts/check_links.sh
+    just _check-links
 
 # Check external links too (run weekly in CI)
 links-external: build
-    scripts/check_links.sh external
+    just _check-links external
+
+# Shared by `links` and `links-external`: check links in the built site with
+# lychee. Links to the site itself are checked against public/ rather than
+# the live site. The project demos under /projects/<demo>/ are third-party
+# builds and skipped.
+_check-links mode="":
+    #!/usr/bin/env -S uv run --script
+    # /// script
+    # requires-python = ">=3.11"
+    # dependencies = []
+    # ///
+    import re, subprocess, sys
+    from pathlib import Path
+
+    mode = "{{ mode }}"
+    base_url = re.search(r'^base_url = "(.*)"', Path("config.toml").read_text(), re.M).group(1)
+    cwd = Path.cwd()
+    args = [
+        "lychee",
+        "--no-progress",
+        "--root-dir", str(cwd / "public"),
+        "--remap", f"^{re.escape(base_url)}/(.*)$ file://{cwd}/public/$1",
+        "--index-files", "index.html",
+        "--include-fragments",
+        "--exclude-path", "public/projects",
+    ]
+    if mode == "external":
+        # LinkedIn rejects automated requests; 429s are rate limits, not broken links.
+        args += ["--max-retries", "3", "--accept", "200..=299,429",
+                  "--exclude", r"^https://(www\.)?linkedin\.com/"]
+    else:
+        args.append("--offline")
+    args.append("public/**/*.html")
+    sys.exit(subprocess.run(args).returncode)
 
 # Fail if security.txt has expired
 check-security-txt:
@@ -229,9 +387,102 @@ lighthouse-summary:
         scores = [round(100 * statistics.median(r[c] for r in rs)) for c in cats]
         print(f"| {url} | " + " | ".join(map(str, scores)) + " |")
 
-# Apply the monthly maintenance bumps (security.txt, footer year, Zola)
+# Apply the monthly maintenance bumps (security.txt, footer year, Zola, KaTeX)
 maintenance:
-    scripts/maintenance.sh
+    #!/usr/bin/env -S uv run --script
+    # /// script
+    # requires-python = ">=3.11"
+    # dependencies = []
+    # ///
+    # Routine version and date bumps, run monthly by
+    # .github/workflows/maintenance.yml. Each step only edits files when
+    # something is due, so a run with nothing to do leaves the tree clean
+    # and no PR is opened.
+    import base64, hashlib, json, os, re, urllib.request
+    from datetime import datetime, timedelta, timezone
+    from pathlib import Path
+
+    today = datetime.now(timezone.utc).date()
+
+    # security.txt: renew the expiry to a year out once it is within 90 days.
+    sec = Path("static/.well-known/security.txt")
+    text = sec.read_text()
+    expires = datetime.strptime(re.search(r"^Expires: (\d{4}-\d{2}-\d{2})T", text, re.M).group(1), "%Y-%m-%d").date()
+    if expires < today + timedelta(days=90):
+        new = today + timedelta(days=365)
+        sec.write_text(re.sub(r"^Expires: .*", f"Expires: {new}T00:00:00.000Z", text, flags=re.M))
+        print(f"security.txt: Expires {expires} -> {new}")
+
+    # Footer copyright end year.
+    config = Path("config.toml")
+    text = config.read_text()
+    year = today.year
+    if f'footer_copyright = "© 2017–{year}' not in text:
+        config.write_text(re.sub(r'(footer_copyright = "© 2017–)\d{4}', rf"\g<1>{year}", text))
+        print(f"footer: copyright year -> {year}")
+
+    # Zola: track the latest release. ZOLA_LATEST can be set to skip the API call.
+    justfile = Path("justfile")
+    text = justfile.read_text()
+    current = re.search(r'zola_version := "(.*)"', text).group(1)
+    latest = os.environ.get("ZOLA_LATEST")
+    if not latest:
+        headers = {}
+        if token := os.environ.get("GITHUB_TOKEN"):
+            headers["Authorization"] = f"Bearer {token}"
+        req = urllib.request.Request("https://api.github.com/repos/getzola/zola/releases/latest", headers=headers)
+        with urllib.request.urlopen(req) as resp:
+            latest = json.load(resp)["tag_name"].lstrip("v")
+
+    def version_tuple(v):
+        return tuple(int(p) for p in v.split("."))
+
+    if latest and latest != current and version_tuple(latest) > version_tuple(current):
+        justfile.write_text(re.sub(r'zola_version := ".*"', f'zola_version := "{latest}"', text))
+        print(f"zola: {current} -> {latest}")
+
+    # KaTeX: re-sync the self-hosted copy under static/katex with the version
+    # serene's own templates pin, verifying each file against serene's own
+    # jsdelivr SRI hash before trusting it.
+    serene = Path("themes/serene/templates/post.html").read_text()
+    ours_path = Path("templates/post.html")
+    ours = ours_path.read_text()
+    version = re.search(r"katex@([0-9.]+)/dist/katex\.min\.css", serene).group(1)
+    changed = False
+    for name in ("katex.min.css", "katex.min.js", "contrib/auto-render.min.js", "contrib/copy-tex.min.js"):
+        base = name.rsplit("/", 1)[-1]
+        match = re.search(re.escape(base) + r'"\s+integrity="([^"]+)"', serene)
+        if not match:
+            raise SystemExit(f"katex: couldn't read {name}'s hash from serene's templates")
+        sri = match.group(1)
+        with urllib.request.urlopen(f"https://cdn.jsdelivr.net/npm/katex@{version}/dist/{name}") as resp:
+            content = resp.read()
+        got = "sha384-" + base64.b64encode(hashlib.sha384(content).digest()).decode()
+        if got != sri:
+            raise SystemExit(f"katex: SRI mismatch for {name} (expected {sri}, got {got})")
+        dest = Path("static/katex") / name
+        if dest.exists() and dest.read_bytes() == content:
+            continue
+        changed = True
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(content)
+        prefix = "path='katex/" + name + "') }}\" integrity=\""
+        start = ours.index(prefix) + len(prefix)
+        end = ours.index('"', start)
+        ours = ours[:start] + sri + ours[end:]
+
+    if changed:
+        ours_path.write_text(ours)
+        fonts_dir = Path("static/katex/fonts")
+        for old in fonts_dir.glob("*.woff2"):
+            old.unlink()
+        css = (Path("static/katex") / "katex.min.css").read_text()
+        for font in sorted(set(re.findall(r"fonts/([A-Za-z0-9_.-]+\.woff2)", css))):
+            with urllib.request.urlopen(f"https://cdn.jsdelivr.net/npm/katex@{version}/dist/fonts/{font}") as resp:
+                (fonts_dir / font).write_bytes(resp.read())
+        print(f"katex: updated to {version}")
+    else:
+        print(f"katex: up to date ({version})")
 
 # Deploy the site to Cloudflare (CI does this on pushes to the default branch)
 deploy: build
