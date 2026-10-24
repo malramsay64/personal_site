@@ -3,14 +3,17 @@
 name = "malramsay-com"
 compatibility_date = "2026-10-01"
 
+routes = [
+  { pattern = "malramsay.com", custom_domain = true },
+  { pattern = "www.malramsay.com", custom_domain = true },
+]
+
+# Keeps `wrangler preview` (used by .github/workflows/preview.yml for PR
+# previews) working now that the custom domain routes disable workers.dev
+# by default, which otherwise also disables Preview URLs.
+preview_urls = true
+
 [assets]
 directory = "./public"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
-
-# Uncomment to serve malramsay.com from this Worker, once ready to move off Netlify.
-# Remove the existing DNS records for malramsay.com and www first.
-# routes = [
-#   { pattern = "malramsay.com", custom_domain = true },
-#   { pattern = "www.malramsay.com", custom_domain = true },
-# ]
