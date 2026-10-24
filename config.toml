@@ -51,7 +51,7 @@ back_link_text = "Back"
 color_scheme = "auto"
 
 footer_copyright = "© 2017–2026 Malcolm Ramsay"
-footer_credits = true
+footer_credits = false
 
 not_found_error_text = "404 Not Found"
 not_found_recover_text = "« back to home »"
