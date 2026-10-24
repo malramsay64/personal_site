@@ -1,7 +1,8 @@
 # Response headers for Cloudflare Workers static assets.
-# The CSP applies to every path, error pages included. scripts/csp.py (run by
-# `just build`) fills in the policy and removes it again ("! Header") for the
-# WebAssembly/PyScript demos under /projects/<demo>/, which load third-party code.
+# The CSP applies to every path, error pages included. The `csp` recipe in
+# justfile (run by `just build`) fills in the policy and removes it again
+# ("! Header") for the WebAssembly/PyScript demos under /projects/<demo>/,
+# which load third-party code.
 
 /*
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
@@ -11,4 +12,5 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
+  Cross-Origin-Embedder-Policy: credentialless
   Content-Security-Policy: __CSP__
