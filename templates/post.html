@@ -8,7 +8,13 @@
 <link rel="alternate" type="text/markdown" title="Markdown source" href="{{ page.permalink }}index.md">
 <meta name="zola-source" content="{{ page.relative_path }}">
 {% if config.markdown.highlighting.style == "class" %}
-<link id="hl" rel="stylesheet" type="text/css" href="/giallo-{% if color_scheme == "dark" %}dark{% else %}light{% endif %}.css" />
+{#- media="print" keeps this off the critical rendering path; the script
+    below swaps it to "all" once loaded, applying the styles without
+    blocking first paint. An inline onload="" attribute would need
+    'unsafe-hashes' in script-src, so the swap happens from a <script>
+    instead, whose content the `csp` recipe hashes like any other. -#}
+<link id="hl" rel="stylesheet" type="text/css" media="print" href="/giallo-{% if color_scheme == "dark" %}dark{% else %}light{% endif %}.css" />
+<script>document.getElementById("hl").onload = function () { this.media = "all"; };</script>
 {% endif %}
 {% set enable_math = page.extra.math if page.extra.math is defined else (section.extra.math if section.extra.math is defined else (config.extra.math if config.extra.math is defined else false)) %}
 {% if enable_math %}
