@@ -12,7 +12,6 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
-  Cross-Origin-Embedder-Policy: credentialless
   Content-Security-Policy: __CSP__
 
 # Workers' default MIME map doesn't know .md; serve it as Markdown rather
