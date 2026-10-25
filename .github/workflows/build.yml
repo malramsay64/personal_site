@@ -41,6 +41,9 @@ jobs:
       - name: Check security.txt has not expired
         run: just check-security-txt
 
+      - name: Lint and type-check scripts/
+        run: just lint
+
   deploy:
     name: Deploy to Cloudflare
     needs: build
