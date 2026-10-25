@@ -106,13 +106,15 @@ csp public="public":
         csp = "; ".join(
             [
                 "default-src 'self'",
-                " ".join(["script-src 'self'", *sorted(scripts)]),
+                # Cloudflare Web Analytics injects this beacon script server-side.
+                " ".join(["script-src 'self' https://static.cloudflareinsights.com", *sorted(scripts)]),
                 # 'unsafe-hashes' lets the hashes cover style="" attributes too.
                 " ".join(["style-src 'self' 'unsafe-hashes'", *sorted(styles)]),
                 "img-src 'self' data:",
                 "font-src 'self'",
                 "frame-src https://www.youtube-nocookie.com",
-                "connect-src 'self'",
+                # https://cloudflareinsights.com is where the beacon script posts its data.
+                "connect-src 'self' https://cloudflareinsights.com",
                 "object-src 'none'",
                 "base-uri 'self'",
                 "form-action 'self'",
